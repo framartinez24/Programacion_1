@@ -1,2 +1,2 @@
-from .animal import Animal as AnimalResource
-from .animal import Animales as AnimalesResource
+from .usuario import Usuario as UsuarioRecurso
+from .usuario import Usuarios as UsuariosRecursos
