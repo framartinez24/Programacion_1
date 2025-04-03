@@ -30,7 +30,7 @@ class Usuario(Resource):
     # Eliminar recurso
     def delete(self, id):
         if id in USUARIOS:
-            del USUARIOS(id)
+            del USUARIOS[id]
             return "Usuario eliminado con exito", 204
         # Si no existe el id
         # Retornar un mensaje de error        
