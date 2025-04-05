@@ -2,49 +2,43 @@ from flask_restful import Resource
 from flask import request
 
 USUARIOS = {
-    1 : {"nombre" : "Juan", "rol" : "Usuario"},
-    2 : {"nombre" : "Jose", "rol" : "Administrador"}}
+    1 : {"nombre" : "Juan", "correo" : "Juan@gmail.com", "direccion" : "Calle 123", "Contraseña" : "12345", "Telefono" : 2611234567, "Rol" : "Administrador"},
+    2 : {"nombre" : "Jose", "correo" : "Jose@gmail.com", "direccion" : "Calle 456", "Contraseña" : "12345", "Telefono" : 2611234568, "Rol" : "Usuario"},
+    3 : {"nombre" : "Pepe", "correo" : "Pepe@gmail.com", "direccion" : "Calle 112", "Contraseña" : "12345", "Telefono" : 2611234569, "Rol" : "Encargado"}
+
+}
 
 
 # Recurso Usuario
-class Usuario(Resource):
-    # Obtener recurso
+class UsuarioRecurso(Resource):  
     def get(self, id):
+        id = int(id)  
         if id in USUARIOS:
-            return USUARIOS(id)
-        # Si no existe el id
-        # Retornar un mensaje de error
-        return "El id es inexistente", 404
-    
-    # Modificar recurso
+            return USUARIOS[id]
+        return {"mensaje": "Usuario no encontrado"}, 404
+
     def put(self, id):
+        id = int(id)  
         if id in USUARIOS:
-            usuario = USUARIOS(id)
             data = request.get_json()
-            usuario.update(data)
-            return "El usuario fue editado con exito", 201
-        # Si no existe el id
-        # Retornar un mensaje de error
-        return "El id modificado no existe", 404
-    
-    # Eliminar recurso
+            USUARIOS[id].update(data)
+            return {"mensaje": "Usuario actualizado"}, 200
+        return {"mensaje": "Usuario no encontrado"}, 404
+
     def delete(self, id):
+        id = int(id)  
         if id in USUARIOS:
             del USUARIOS[id]
-            return "Usuario eliminado con exito", 204
-        # Si no existe el id
-        # Retornar un mensaje de error        
-        return "El id eliminado no existe", 404
+            return {"mensaje": "Usuario eliminado"}, 204
+        return {"mensaje": "Usuario no encontrado"}, 404
 
 # Recurso Usuarios
-class Usuarios(Resource):
-    # Obtener recurso
-    def get (self):
+class UsuariosRecursos(Resource):  
+    def get(self):
         return USUARIOS
-    # Obtener recurso por id
-    # Insertar recurso
+
     def post(self):
-        usuario = request.get_json()
-        id = int(max(USUARIOS.keys())) + 1
-        USUARIOS[id] = usuario
-        return USUARIOS[id], 201
+        data = request.get_json()
+        nuevo_id = max(USUARIOS.keys(), default=0) + 1
+        USUARIOS[nuevo_id] = data
+        return USUARIOS[nuevo_id], 201

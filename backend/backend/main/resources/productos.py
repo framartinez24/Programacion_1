@@ -2,9 +2,8 @@ from flask_restful import Resource
 from flask import request
 
 PRODUCTOS = {
-    1: {"nombre_Prod": "Empanada", "descripcion" : "Empanada de carne ...", "precio": 100, "stock" : 48},
-    2: {"nombre_Prod": "Pizza", "descripcion" : "Pizza napolitana ...", "precio": 100, "stock" : 20},
-
+    1: {"nombre": "Empanada", "precio": 100},
+    2: {"nombre": "Pizza", "precio": 800}
 }
 
 # Recurso Producto
