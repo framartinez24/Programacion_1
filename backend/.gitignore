@@ -9,3 +9,4 @@ pyvenv.cfg
 env
 __pycache__
 /main/__pycache__
+/main/resources/__pycache__
