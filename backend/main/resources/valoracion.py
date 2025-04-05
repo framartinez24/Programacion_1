@@ -1,7 +1,11 @@
 from flask_restful import Resource
 from flask import request
 
-VALORACIONES = {}
+VALORACIONES = {
+    1: {"puntuacion" : 10, "comentario" : "Muy rico"},
+    2: {"puntuacion" : 7,  "comentario" : "Estaba rico, pero estaba frio"},
+    3: {"puntuacion" : 0, "comentario" : "Tenia un pelo"}
+}
 
 class ValoracionRecurso(Resource):
     def post(self):
