@@ -48,7 +48,7 @@
 			"response": []
 		},
 		{
-			"name": "GET valoracion por ID",
+			"name": "POST valoracion nueva",
 			"request": {
 				"method": "POST",
 				"header": [],
