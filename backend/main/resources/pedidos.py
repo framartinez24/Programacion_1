@@ -27,7 +27,7 @@ class PedidoRecurso(Resource):
         id = int(id)
         if id in PEDIDOS:
             del PEDIDOS[id]
-            return {"mensaje": "Pedido eliminado"}, 204
+            return {"mensaje": "Pedido eliminado"}, 200
         return {"mensaje": "Pedido no encontrado"}, 404
 
 class PedidosRecursos(Resource):

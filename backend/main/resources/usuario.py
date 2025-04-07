@@ -29,7 +29,7 @@ class UsuarioRecurso(Resource):
         id = int(id)  
         if id in USUARIOS:
             del USUARIOS[id]
-            return {"mensaje": "Usuario eliminado"}, 204
+            return {"mensaje": "Usuario eliminado"}, 200
         return {"mensaje": "Usuario no encontrado"}, 404
 
 # Recurso Usuarios

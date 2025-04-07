@@ -27,7 +27,7 @@ class ProductoRecurso(Resource):
         id = int(id)  
         if id in PRODUCTOS:
             del PRODUCTOS[id]
-            return {"mensaje": "Producto eliminado"}, 204
+            return {"mensaje": "Producto eliminado"}, 200
         return {"mensaje": "Producto no encontrado"}, 404
 
 # Recurso Productos
