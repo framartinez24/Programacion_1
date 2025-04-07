@@ -1,0 +1,189 @@
+{
+	"info": {
+		"_postman_id": "3f018354-feee-4184-8343-53907829563c",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30402646",
+		"_collection_link": "https://luciano-2540759.postman.co/workspace/Luciano's-Workspace~0700a669-d0b7-444a-82bd-26817b629a62/collection/30402646-3f018354-feee-4184-8343-53907829563c?action=share&source=collection_link&creator=30402646"
+	},
+	"item": [
+		{
+			"name": "GET usuario por ID",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "GET Todos los usuarios",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "GET Todos los productos",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "GET producto por ID",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "GET Todas las valoraciones",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "GET valoracion por ID",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3535/valoracion?{=&\"producto_id\"= 2,&\"puntuacion\"= 8,&\"comentario\"= \"Muy sabroso y buena presentación\"&}=",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"valoracion"
+					],
+					"query": [
+						{
+							"key": "{",
+							"value": ""
+						},
+						{
+							"key": "\"producto_id\"",
+							"value": " 2,"
+						},
+						{
+							"key": "\"puntuacion\"",
+							"value": " 8,"
+						},
+						{
+							"key": "\"comentario\"",
+							"value": " \"Muy sabroso y buena presentación\""
+						},
+						{
+							"key": "}",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST usuario nuevo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3535/usuarios?24= {\"nombre\" : \"Pepe\", \"correo\" : \"Pepe@gmail.com\", \"direccion\" : \"Calle 112\", \"Contraseña\" : \"12345\", \"Telefono\" : 2611234569, \"Rol\" : \"Encargado\"}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"usuarios"
+					],
+					"query": [
+						{
+							"key": "24",
+							"value": " {\"nombre\" : \"Pepe\", \"correo\" : \"Pepe@gmail.com\", \"direccion\" : \"Calle 112\", \"Contraseña\" : \"12345\", \"Telefono\" : 2611234569, \"Rol\" : \"Encargado\"}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST producto nuevo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre_Prod\": \"Bondiola al disco\",\n    \"descripcion\": \"Deliciosa bondiola braseada al disco\",\n    \"precio\": 2500,\n    \"stock\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3535/productos?{=&\"nombre_Prod\"= \"Bondiola al disco\",&\"descripcion\"= \"Deliciosa bondiola braseada al disco\",&\"precio\"= 2500,&\"stock\"= 10&}=",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"productos"
+					],
+					"query": [
+						{
+							"key": "{",
+							"value": ""
+						},
+						{
+							"key": "\"nombre_Prod\"",
+							"value": " \"Bondiola al disco\","
+						},
+						{
+							"key": "\"descripcion\"",
+							"value": " \"Deliciosa bondiola braseada al disco\","
+						},
+						{
+							"key": "\"precio\"",
+							"value": " 2500,"
+						},
+						{
+							"key": "\"stock\"",
+							"value": " 10"
+						},
+						{
+							"key": "}",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
