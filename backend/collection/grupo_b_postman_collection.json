@@ -1,0 +1,442 @@
+{
+	"info": {
+		"_postman_id": "b2e3a5fe-d6cd-431e-9654-55096a36f169",
+		"name": "grupo-b-postman-collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43701524",
+		"_collection_link": "https://nicolas-4414519.postman.co/workspace/Nicolas's-Workspace~50f8d7ef-115e-4860-8ed3-126a29988407/collection/43701524-b2e3a5fe-d6cd-431e-9654-55096a36f169?action=share&source=collection_link&creator=43701524"
+	},
+	"item": [
+		{
+			"name": "GET usuario por ID",
+			"protocolProfileBehavior": {
+				"protocolVersion": "auto"
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3535/usuario/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"usuario",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Todos los usuarios",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3535/usuarios",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Todos los productos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3535/productos",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"productos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET producto por ID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3535/producto/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"producto",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Todas las valoraciones",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3535/valoracion",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"valoracion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST valoracion nueva",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Message</th>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>{{response.message}}</td>",
+							"    </tr>",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    return { response: pm.response.json() }",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"producto_id\": 2,\n  \"puntuacion\": 8,\n  \"comentario\": \"Delicioso\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3535/valoracion?{=&\"producto_id\"= 2,&\"puntuacion\"= 8,&\"comentario\"= \"Muy sabroso y buena presentación\"&}=",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"valoracion"
+					],
+					"query": [
+						{
+							"key": "{",
+							"value": ""
+						},
+						{
+							"key": "\"producto_id\"",
+							"value": " 2,"
+						},
+						{
+							"key": "\"puntuacion\"",
+							"value": " 8,"
+						},
+						{
+							"key": "\"comentario\"",
+							"value": " \"Muy sabroso y buena presentación\""
+						},
+						{
+							"key": "}",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST usuario nuevo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\n    \"nombre\" : \"Franco\", \n    \"correo\" : \"ayudaporfavor@gmail.com\", \n    \"direccion\" : \"UM 2025\", \n    \"Contraseña\" : \"MessiGOD43\", \n    \"Telefono\" : 2611234569, \n    \"Rol\" : \"Administrador\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3535/usuarios?24= {\"nombre\" : \"Pepe\", \"correo\" : \"Pepe@gmail.com\", \"direccion\" : \"Calle 112\", \"Contraseña\" : \"12345\", \"Telefono\" : 2611234569, \"Rol\" : \"Encargado\"}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"usuarios"
+					],
+					"query": [
+						{
+							"key": "24",
+							"value": " {\"nombre\" : \"Pepe\", \"correo\" : \"Pepe@gmail.com\", \"direccion\" : \"Calle 112\", \"Contraseña\" : \"12345\", \"Telefono\" : 2611234569, \"Rol\" : \"Encargado\"}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST producto nuevo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre_Prod\": \"Bondiola al disco\",\n    \"descripcion\": \"Deliciosa bondiola braseada al disco\",\n    \"precio\": 2500,\n    \"stock\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3535/productos?{=&\"nombre_Prod\"= \"Bondiola al disco\",&\"descripcion\"= \"Deliciosa bondiola braseada al disco\",&\"precio\"= 2500,&\"stock\"= 10&}=",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"productos"
+					],
+					"query": [
+						{
+							"key": "{",
+							"value": ""
+						},
+						{
+							"key": "\"nombre_Prod\"",
+							"value": " \"Bondiola al disco\","
+						},
+						{
+							"key": "\"descripcion\"",
+							"value": " \"Deliciosa bondiola braseada al disco\","
+						},
+						{
+							"key": "\"precio\"",
+							"value": " 2500,"
+						},
+						{
+							"key": "\"stock\"",
+							"value": " 10"
+						},
+						{
+							"key": "}",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Actualizar usuario",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"nombre\": \"Juan Actualizado\",\n  \"email\": \"juan.actualizado@example.com\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3535/usuario/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"usuario",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Actualizar producto",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"nombre\": \"Empanada de carne\",\n  \"precio\": 750,\n  \"stock\": 20\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3535/producto/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"producto",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Eliminar usuario por ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3535/usuario/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"usuario",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Producto por ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3535/producto/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3535",
+					"path": [
+						"producto",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
