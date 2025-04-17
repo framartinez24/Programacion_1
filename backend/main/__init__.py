@@ -1,44 +1,48 @@
 from flask import Flask
 from dotenv import load_dotenv
 from flask_restful import Api
+from flask_sqlalchemy import SQLAlchemy
+import os
 
-import main.resources as resources
-
-#Inicializamos restful
 api = Api()
+db = SQLAlchemy()
 
 def create_app():
-    #Inicializar flask
     app = Flask(__name__)
-    #cargamos variables de entorno
     load_dotenv()
-    
-    # Agregamos el recurso de lusuarios
-    api.add_resource(resources.UsuarioRecurso, '/usuario/<id>')
-    api.add_resource(resources.UsuariosRecursos, '/usuarios')
 
-    # Agregamos los recursos de productos
-    api.add_resource(resources.ProductoRecurso, '/producto/<id>')
-    api.add_resource(resources.ProductosRecursos, '/productos')
+    raw_path = os.getenv('DATABASE_PATH', './DB')
+    db_path = os.path.abspath(raw_path)
+    db_name = os.getenv('DATABASE_NAME', 'app.db')
+    full_path = os.path.join(db_path, db_name)
 
-    # Agregamos el recurso de login
-    api.add_resource(resources.LoginRecurso, '/login')
+    if not os.path.exists(db_path):
+        os.makedirs(db_path)
+    if not os.path.exists(full_path):
+        open(full_path, 'a').close()
 
-    # Agregamos el recurso de logout
-    api.add_resource(resources.LogoutRecurso, '/logout')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{full_path}'
 
-    # Agregamos el recurso de pedidos
-    api.add_resource(resources.PedidosRecursos, '/pedidos')
-    api.add_resource(resources.PedidoRecurso, '/pedido/<id>')
+    db.init_app(app)
 
-    # Agregamos el recurso de notificaciones
-    api.add_resource(resources.NotificacionRecurso, '/notificaciones')
+    import main.resources as resources
 
-    # Agregamos el recurso de valoración
-    api.add_resource(resources.ValoracionRecurso, '/valoracion')
+    api.add_resource(resources.UsuarioRecurso, '/usuario/<id>', endpoint="usuario")
+    api.add_resource(resources.UsuariosRecursos, '/usuarios', endpoint="usuarios")
+    api.add_resource(resources.ProductoRecurso, '/producto/<id>', endpoint="producto")
+    api.add_resource(resources.ProductosRecursos, '/productos', endpoint="productos")
+    api.add_resource(resources.LoginRecurso, '/login', endpoint="login")
+    api.add_resource(resources.LogoutRecurso, '/logout', endpoint="logout")
+    api.add_resource(resources.PedidosRecursos, '/pedidos', endpoint="pedidos")
+    api.add_resource(resources.PedidoRecurso, '/pedido/<id>', endpoint="pedido")
+    api.add_resource(resources.NotificacionRecurso, '/notificaciones', endpoint="notificaciones")
+    api.add_resource(resources.ValoracionRecurso, '/valoracion', endpoint="valoracion")
 
-    
     api.init_app(app)
 
+    # 👇 Crear tablas si no existen
+    with app.app_context():
+        db.create_all()
+
     return app
-    

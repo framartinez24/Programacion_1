@@ -1,3 +1,4 @@
-flask
-python-dotenv
-flask-restful
+Flask==2.3.3
+flask-restful==0.3.9
+flask_sqlalchemy==3.1.1
+python-dotenv==1.0.1
