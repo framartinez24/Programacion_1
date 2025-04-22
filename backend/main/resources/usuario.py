@@ -1,56 +1,62 @@
 from flask_restful import Resource
 from flask import request
-from main.models import UsuarioModel
+from ..models import UsuarioModel
 from .. import db
 
-USUARIOS = {
-    1 : {"nombre" : "Juan", "correo" : "Juan@gmail.com", "direccion" : "Calle 123", "Contraseña" : "12345", "Telefono" : 2611234567, "Rol" : "Administrador"},
-    2 : {"nombre" : "Jose", "correo" : "Jose@gmail.com", "direccion" : "Calle 456", "Contraseña" : "12345", "Telefono" : 2611234568, "Rol" : "Usuario"},
-    3 : {"nombre" : "Pepe", "correo" : "Pepe@gmail.com", "direccion" : "Calle 112", "Contraseña" : "12345", "Telefono" : 2611234569, "Rol" : "Encargado"}
-
-}
-
-
-# Recurso Usuario
+# Recurso individual
 class UsuarioRecurso(Resource):  
     def get(self, id):
         usuario = db.session.query(UsuarioModel).get(id)
         if usuario:
             return usuario.to_json()
-        else:
-            return {"mensaje" : "Usuario no encontrado"}, 404
-
-
-
-
-
-        #id = int(id)  
-        #if id in USUARIOS:
-        #    return USUARIOS[id]
-        #return {"mensaje": "Usuario no encontrado"}, 404
+        return {"mensaje": "Usuario no encontrado"}, 404
 
     def put(self, id):
-        id = int(id)  
-        if id in USUARIOS:
-            data = request.get_json()
-            USUARIOS[id].update(data)
-            return {"mensaje": "Usuario actualizado"}, 200
-        return {"mensaje": "Usuario no encontrado"}, 404
+        usuario = db.session.query(UsuarioModel).get(id)
+        if not usuario:
+            return {"mensaje": "Usuario no encontrado"}, 404
+
+        data = request.get_json()
+
+        usuario.nombre = data.get("nombre", usuario.nombre)
+        usuario.correo = data.get("correo", usuario.correo)
+        usuario.direccion = data.get("direccion", usuario.direccion)
+        usuario.contraseña = data.get("contraseña", usuario.contraseña)
+        usuario.telefono = data.get("Telefono", usuario.telefono)
+        usuario.rol = data.get("Rol", usuario.rol)
+
+        db.session.commit()
+        return {"mensaje": "Usuario actualizado"}, 200
 
     def delete(self, id):
-        id = int(id)  
-        if id in USUARIOS:
-            del USUARIOS[id]
-            return {"mensaje": "Usuario eliminado"}, 200
-        return {"mensaje": "Usuario no encontrado"}, 404
+        usuario = db.session.query(UsuarioModel).get(id)
+        if not usuario:
+            return {"mensaje": "Usuario no encontrado"}, 404
 
-# Recurso Usuarios
+        db.session.delete(usuario)
+        db.session.commit()
+        return {"mensaje": "Usuario eliminado"}, 200
+
+
+# Recurso plural
 class UsuariosRecursos(Resource):  
     def get(self):
-        return USUARIOS
+        usuarios = db.session.query(UsuarioModel).all()
+        return [usuario.to_json() for usuario in usuarios]
 
     def post(self):
         data = request.get_json()
-        nuevo_id = max(USUARIOS.keys(), default=0) + 1
-        USUARIOS[nuevo_id] = data
-        return USUARIOS[nuevo_id], 201
+
+        nuevo_usuario = UsuarioModel(
+            nombre=data.get("nombre"),
+            correo=data.get("correo"),
+            direccion=data.get("direccion"),
+            contraseña=data.get("contraseña"),
+            telefono=data.get("Telefono"),
+            rol=data.get("Rol")
+        )
+
+        db.session.add(nuevo_usuario)
+        db.session.commit()
+
+        return nuevo_usuario.to_json(), 201

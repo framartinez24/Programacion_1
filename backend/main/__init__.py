@@ -36,8 +36,16 @@ def create_app():
     api.add_resource(resources.LogoutRecurso, '/logout', endpoint="logout")
     api.add_resource(resources.PedidosRecursos, '/pedidos', endpoint="pedidos")
     api.add_resource(resources.PedidoRecurso, '/pedido/<id>', endpoint="pedido")
-    api.add_resource(resources.NotificacionRecurso, '/notificaciones', endpoint="notificaciones")
     api.add_resource(resources.ValoracionRecurso, '/valoracion', endpoint="valoracion")
+    api.add_resource(resources.ValoracionItemRecurso, '/valoracion/<id>', endpoint="valoracion_item")
+    api.add_resource(resources.NotificacionesRecurso, '/notificaciones', endpoint="notificaciones")
+    api.add_resource(resources.NotificacionRecurso, '/notificacion/<int:id>')
+    api.add_resource(resources.LoginRecurso, '/login')
+    api.add_resource(resources.UsuariosRecursos, '/usuarios')
+    api.add_resource(resources.UsuarioRecurso, '/usuario/<int:id>')
+
+
+
 
     api.init_app(app)
 
