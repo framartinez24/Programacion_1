@@ -2,6 +2,7 @@ from flask import Flask
 from dotenv import load_dotenv
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 import os
 
 api = Api()
@@ -45,12 +46,13 @@ def create_app():
     api.add_resource(resources.UsuarioRecurso, '/usuario/<int:id>')
 
 
-
-
     api.init_app(app)
 
     # 👇 Crear tablas si no existen
     with app.app_context():
+        db.session.execute(text("SELECT 1"))
+        print("Conectado OK")
+        #db.drop_all()
         db.create_all()
 
     return app

@@ -1,4 +1,4 @@
-from .. import db
+from main import db
 
 class NotificacionModel(db.Model):
     __tablename__ = "notificacion"
@@ -8,6 +8,9 @@ class NotificacionModel(db.Model):
     tipo = db.Column(db.String(100), nullable=True)
     fecha = db.Column(db.String(100), nullable=True)
 
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    notificaciones= db.relationship("PedidoModel", secondary='pedidos_notificacion', back_populates="notificaciones")
+    
     def to_json(self):
         return {
             "id": self.id,

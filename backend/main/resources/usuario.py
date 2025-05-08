@@ -38,7 +38,6 @@ class UsuarioRecurso(Resource):
         return {"mensaje": "Usuario eliminado"}, 200
 
 
-# Recurso plural
 class UsuariosRecursos(Resource):  
     def get(self):
         usuarios = db.session.query(UsuarioModel).all()
