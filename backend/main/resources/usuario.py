@@ -41,8 +41,10 @@ class UsuarioRecurso(Resource):
 # Recurso plural
 class UsuariosRecursos(Resource):  
     def get(self):
-        usuarios = db.session.query(UsuarioModel).all()
-        return [usuario.to_json() for usuario in usuarios]
+        page = request.args.get("page", 1, type=int)
+        per_page = request.args.get("per_page", 10, type=int)
+        paginated = db.session.query(UsuarioModel).paginate(page=page, per_page=per_page, error_out=False)
+        return [usuario.to_json() for usuario in paginated.items]
 
     def post(self):
         data = request.get_json()

@@ -40,12 +40,13 @@ class ProductoRecurso(Resource):
             db.session.rollback()
             return {"mensaje": f"Error al eliminar: {str(e)}"}, 500
 
-
 class ProductosRecursos(Resource):  
     def get(self):
-        productos = db.session.query(ProductoModel).all()
-        return [producto.to_json() for producto in productos], 200
-
+        page = request.args.get("page", 1, type=int)
+        per_page = request.args.get("per_page", 10, type=int)
+        paginated = db.session.query(ProductoModel).paginate(page=page, per_page=per_page, error_out=False)
+        return [producto.to_json() for producto in paginated.items], 200
+    
     def post(self):
         data = request.get_json()
         if not data:
