@@ -1,4 +1,4 @@
-from main import db
+from .. import db
 
 class NotificacionModel(db.Model):
     __tablename__ = "notificacion"
@@ -7,10 +7,12 @@ class NotificacionModel(db.Model):
     mensaje = db.Column(db.String(255), nullable=False)
     tipo = db.Column(db.String(100), nullable=True)
     fecha = db.Column(db.String(100), nullable=True)
+    usuario = db.relationship("UsuarioModel", back_populates="notificaciones")
+    usuario_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    pedido = db.relationship("PedidoModel", back_populates="notificaciones")
+    pedido_id = db.Column(db.Integer, db.ForeignKey('pedido.id'), nullable=False)
 
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    notificaciones= db.relationship("PedidoModel", secondary='pedidos_notificacion', back_populates="notificaciones")
-    
+
     def to_json(self):
         return {
             "id": self.id,

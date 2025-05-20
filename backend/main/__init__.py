@@ -2,8 +2,8 @@ from flask import Flask
 from dotenv import load_dotenv
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
 import os
+
 
 api = Api()
 db = SQLAlchemy()
@@ -44,15 +44,16 @@ def create_app():
     api.add_resource(resources.LoginRecurso, '/login')
     api.add_resource(resources.UsuariosRecursos, '/usuarios')
     api.add_resource(resources.UsuarioRecurso, '/usuario/<int:id>')
+    api.add_resource(resources.DetallePedidoRecurso, '/detalle_pedido', '/detalle_pedido/<int:id>')
+    api.add_resource(resources.FacturasRecurso, '/facturas')
+    api.add_resource(resources.FacturaRecurso, '/factura/<int:id>')
+
 
 
     api.init_app(app)
 
     # 👇 Crear tablas si no existen
     with app.app_context():
-        db.session.execute(text("SELECT 1"))
-        print("Conectado OK")
-        #db.drop_all()
         db.create_all()
 
     return app

@@ -6,3 +6,5 @@ from .pedidos import PedidoRecurso, PedidosRecursos
 from .notificaciones import NotificacionRecurso
 from .notificaciones import NotificacionesRecurso
 from .valoracion import ValoracionRecurso, ValoracionItemRecurso
+from .detalle_pedido import DetallePedidoRecurso
+from .factura import FacturaRecurso, FacturasRecurso

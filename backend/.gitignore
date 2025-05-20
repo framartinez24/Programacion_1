@@ -1,9 +1,2 @@
-/bin
-/include
-/lib
-/lib64
-/share
-__pycache__/
-pyvenv.cfg
-.env
-venv/
+# Created by venv; see https://docs.python.org/3/library/venv.html
+*

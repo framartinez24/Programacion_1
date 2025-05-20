@@ -1,4 +1,4 @@
-from main import db
+from .. import db
 
 class ProductoModel(db.Model):
     __tablename__ = "productos"
@@ -8,9 +8,6 @@ class ProductoModel(db.Model):
     descripcion = db.Column(db.String(255))
     precio = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, nullable=False)
-
-    valoraciones = db.relationship("ValoracionModel", secondary='producto_valoracion', back_populates="productos", cascade="all, delete-orphan")
-    detalle_pedidos = db.relationship("DetallePedidosModel", back_populates="producto", cascade="all, delete-orphan")
 
     def to_json(self):
         return {
@@ -26,3 +23,6 @@ class ProductoModel(db.Model):
         self.descripcion = data.get("descripcion", self.descripcion)
         self.precio = data.get("precio", self.precio)
         self.stock = data.get("stock", self.stock)
+    
+    detalle_pedido = db.relationship("DetallePedidoModel", back_populates="producto", cascade="all, delete-orphan")
+    valoraciones = db.relationship("ValoracionModel", back_populates="producto", cascade="all, delete-orphan")

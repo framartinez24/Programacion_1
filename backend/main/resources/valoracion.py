@@ -1,3 +1,4 @@
+
 from flask_restful import Resource
 from flask import request
 from main.models import ValoracionModel
@@ -10,21 +11,24 @@ class ValoracionRecurso(Resource):
 
     def post(self):
         data = request.get_json()
-        producto_id = data.get("producto_id")
-        puntuacion = data.get("puntuacion")
-        comentario = data.get("comentario", "")
 
-        if producto_id is None or puntuacion is None:
-            return {"error": "Faltan campos obligatorios: producto_id o puntuacion"}, 400
+        try:
+            nueva_valoracion = ValoracionModel(
+                usuario_id=data["usuario_id"],
+                producto_id=data["producto_id"],
+                puntuacion=data["puntuacion"],
+                comentario=data.get("comentario")
+            )
+            db.session.add(nueva_valoracion)
+            db.session.commit()
+            return nueva_valoracion.to_dict(), 201
 
-        nueva_valoracion = ValoracionModel(
-            producto_id=producto_id,
-            puntuacion=puntuacion,
-            comentario=comentario
-        )
-        db.session.add(nueva_valoracion)
-        db.session.commit()
-        return nueva_valoracion.to_dict(), 201
+        except KeyError as e:
+            return {"error": f"Falta el campo obligatorio: {str(e)}"}, 400
+
+        except Exception as e:
+            db.session.rollback()
+            return {"error": f"Error al guardar la valoración: {str(e)}"}, 500
 
 class ValoracionItemRecurso(Resource):
     def get(self, id):

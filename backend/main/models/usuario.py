@@ -1,4 +1,5 @@
-from main import db
+from .. import db
+
 class UsuarioModel(db.Model):
     __tablename__ = 'usuarios'
 
@@ -9,11 +10,11 @@ class UsuarioModel(db.Model):
     contraseña = db.Column(db.String(100))
     telefono = db.Column(db.BigInteger)
     rol = db.Column(db.String(50))
-
-    valoraciones = db.relationship("ValoracionModel", secondary='usuario_valoracion', back_populates="usuarios")
-    pedidos = db.relationship("pedidoModel", secondary='usuario_pedido', back_populates="usuarios")
+    valoraciones = db.relationship("ValoracionModel", back_populates="usuario", cascade="all, delete-orphan")
+    pedidos = db.relationship("PedidoModel", back_populates="usuario", cascade="all, delete-orphan")
     notificaciones = db.relationship("NotificacionModel", back_populates="usuario", cascade="all, delete-orphan")
-    factura =  db.relationship("FacturaModel", secondary='usuario_factura', back_populates="usuario")
+    facturas = db.relationship("FacturaModel", back_populates="usuario", cascade="all, delete-orphan")
+
     def to_json(self):
         return {
             "id": self.id,
