@@ -17,6 +17,7 @@ class UsuarioModel(db.Model):
             'nombre': self.nombre,
             'correo': self.correo,
             'direccion': self.direccion,
+            'contraseña' : self.contraseña,
             'telefono': self.telefono,
             'rol': self.rol
         }

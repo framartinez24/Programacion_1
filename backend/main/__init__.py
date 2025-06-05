@@ -2,15 +2,21 @@ from flask import Flask
 from dotenv import load_dotenv
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
+from datetime import timedelta
 import os
 
 
 api = Api()
 db = SQLAlchemy()
+# Iniciamos JWT
+jwt = JWTManager()
+
 
 def create_app():
-    app = Flask(__name__)
     load_dotenv()
+    app = Flask(__name__)
+    
 
     raw_path = os.getenv('DATABASE_PATH', './DB')
     db_path = os.path.abspath(raw_path)
@@ -47,10 +53,23 @@ def create_app():
     api.add_resource(resources.DetallePedidoRecurso, '/detalle_pedido', '/detalle_pedido/<int:id>')
     api.add_resource(resources.FacturasRecurso, '/facturas')
     api.add_resource(resources.FacturaRecurso, '/factura/<int:id>')
-
-
-
+    
+    
+    # Es para que la aplicación de Flask funcione como API
     api.init_app(app)
+
+
+
+    # Claves necesarias para JWT y Flask
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'clave-flask-segura')
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'clave-jwt-supersegura')
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600)))
+
+    jwt.init_app(app)
+
+    from main.auth import routes 
+    app.register_blueprint(routes.auth)
+
 
     # 👇 Crear tablas si no existen
     with app.app_context():

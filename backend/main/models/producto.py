@@ -24,6 +24,7 @@ class ProductoModel(db.Model):
         self.nombre = data.get("nombre", self.nombre)
         self.descripcion = data.get("descripcion", self.descripcion)
         self.precio = data.get("precio", self.precio)
+        self.categoria = data.get('precio', self.categoria)
         self.stock = data.get("stock", self.stock)
     
     detalle_pedido = db.relationship("DetallePedidoModel", back_populates="producto", cascade="all, delete-orphan")

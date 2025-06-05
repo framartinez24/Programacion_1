@@ -1,18 +1,33 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify
 from sqlalchemy import desc
 from ..models import UsuarioModel
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from main.auth.decorators import role_required
 from .. import db
 
 
 # Recurso individual
 class UsuarioRecurso(Resource):
-    def get(self, id):
-        usuario = db.session.query(UsuarioModel).get(id)
-        if usuario:
-            return usuario.to_json()
-        return {"mensaje": "Usuario no encontrado"}, 404
+    @jwt_required(optional=True)
+    # Crear recurso usuario
+    @jwt_required()
+    def get(self):
 
+        correo = request.args.get("correo", None)
+        rol = request.args.get("rol", None)
+
+        query = UsuarioModel.query
+
+        if correo:
+            query = query.filter(UsuarioModel.correo.like(f"%{correo}%"))
+
+        if rol:
+            query = query.filter(UsuarioModel.rol == rol)
+
+
+    # Editar recurso usuario con autenticación
+    @jwt_required()
     def put(self, id):
         usuario = db.session.query(UsuarioModel).get(id)
         if not usuario:
@@ -20,28 +35,40 @@ class UsuarioRecurso(Resource):
 
         data = request.get_json()
 
+    # Actualiza solo si hay datos nuevos, conserva lo anterior si no viene algo
         usuario.nombre = data.get("nombre", usuario.nombre)
         usuario.correo = data.get("correo", usuario.correo)
         usuario.direccion = data.get("direccion", usuario.direccion)
         usuario.contraseña = data.get("contraseña", usuario.contraseña)
-        usuario.telefono = data.get("Telefono", usuario.telefono)
-        usuario.rol = data.get("Rol", usuario.rol)
+        usuario.telefono = data.get("telefono", usuario.telefono)
+        usuario.rol = data.get("rol", usuario.rol)
+
+    # Si viene una nueva contraseña, la hasheo usando el setter
+        if "contraseña" in data:
+            usuario.plain_contraseña = data["contraseña"]
 
         db.session.commit()
         return {"mensaje": "Usuario actualizado"}, 200
 
+    
+    @role_required(roles=["administrador", "empleado"])
+    # Elimina recurso usuario
     def delete(self, id):
-        usuario = db.session.query(UsuarioModel).get(id)
-        if not usuario:
-            return {"mensaje": "Usuario no encontrado"}, 404
-
+        usuario = db.session.query(UsuarioModel).get_or_404(id)
+        rol = get_jwt().get("rol")
+        
+        # Si el rol es 'empleado', solo puede eliminar su propio usuario
+        if rol == "empleado" and usuario.id != get_jwt_identity():
+            return {"mensaje": "No tiene permisos para eliminar este recurso"}, 403
+        
         db.session.delete(usuario)
         db.session.commit()
-        return {"mensaje": "Usuario eliminado"}, 200
+        return '', 204
 
 
 # Recurso plural
 class UsuariosRecursos(Resource):
+    @role_required(roles = ["administrador"])
     def get(self):
         # Paginación
         page = request.args.get("page", 1, type=int)
@@ -82,18 +109,22 @@ class UsuariosRecursos(Resource):
         return [usuario.to_json() for usuario in paginated.items]
 
     def post(self):
+    
         data = request.get_json()
 
-        nuevo_usuario = UsuarioModel(
+        usuario = UsuarioModel(
             nombre=data.get("nombre"),
             correo=data.get("correo"),
             direccion=data.get("direccion"),
-            contraseña=data.get("contraseña"),
-            telefono=data.get("Telefono"),
-            rol=data.get("Rol")
+            telefono=data.get("telefono"),
+            rol=data.get("rol")
         )
 
-        db.session.add(nuevo_usuario)
+
+# Usar el setter para que se guarde la contraseña hasheada
+        usuario.plain_contraseña = data.get("contraseña")
+
+        db.session.add(usuario)
         db.session.commit()
-        return nuevo_usuario.to_json(), 201
+        return usuario.to_json(), 201
 
