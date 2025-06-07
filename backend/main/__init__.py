@@ -4,19 +4,18 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
+from flask_mail import Mail
 import os
-
 
 api = Api()
 db = SQLAlchemy()
-# Iniciamos JWT
 jwt = JWTManager()
+mailsender = Mail()
 
 
 def create_app():
     load_dotenv()
     app = Flask(__name__)
-    
 
     raw_path = os.getenv('DATABASE_PATH', './DB')
     db_path = os.path.abspath(raw_path)
@@ -30,7 +29,6 @@ def create_app():
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{full_path}'
-
     db.init_app(app)
 
     import main.resources as resources
@@ -47,31 +45,33 @@ def create_app():
     api.add_resource(resources.ValoracionItemRecurso, '/valoracion/<id>', endpoint="valoracion_item")
     api.add_resource(resources.NotificacionesRecurso, '/notificaciones', endpoint="notificaciones")
     api.add_resource(resources.NotificacionRecurso, '/notificacion/<int:id>')
-    api.add_resource(resources.LoginRecurso, '/login')
-    api.add_resource(resources.UsuariosRecursos, '/usuarios')
-    api.add_resource(resources.UsuarioRecurso, '/usuario/<int:id>')
     api.add_resource(resources.DetallePedidoRecurso, '/detalle_pedido', '/detalle_pedido/<int:id>')
     api.add_resource(resources.FacturasRecurso, '/facturas')
     api.add_resource(resources.FacturaRecurso, '/factura/<int:id>')
-    
-    
-    # Es para que la aplicación de Flask funcione como API
     api.init_app(app)
 
-
-
-    # Claves necesarias para JWT y Flask
+    # Configuración JWT
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'clave-flask-segura')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'clave-jwt-supersegura')
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600)))
-
     jwt.init_app(app)
 
+    #Configuración de mail
+    app.config['MAIL_HOSTNAME'] = os.getenv('MAIL_HOSTNAME')
+    app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+    app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+    app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS')
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+    app.config['FLASKY_MAIL_SENDER'] = os.getenv('FLASKY_MAIL_SENDER')
+    #Inicializar en app
+    mailsender.init_app(app)
+
+    # Registrar Blueprint
     from main.auth import routes 
     app.register_blueprint(routes.auth)
 
-
-    # 👇 Crear tablas si no existen
+    # Crear tablas si no existen
     with app.app_context():
         db.create_all()
 

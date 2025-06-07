@@ -1,7 +1,8 @@
 from flask import request, jsonify, Blueprint
 from .. import db
 from main.models import UsuarioModel
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import create_access_token
+from main.mail.functions import sendMail
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -14,7 +15,7 @@ def login():
     if not correo or not contraseña:
         return {'mensaje': 'Correo y contraseña son requeridos'}, 400
 
-    usuario = db.session.query(UsuarioModel).filter(UsuarioModel.correo == request.get_json().get("correo")).first()
+    usuario = db.session.query(UsuarioModel).filter(UsuarioModel.correo == correo).first()
     if not usuario or not usuario.validate_pass(contraseña):
         return {'mensaje': 'Correo o contraseña inválidos'}, 401
 
@@ -25,22 +26,17 @@ def login():
         'access_token': access_token
     }), 200
 
-
-# Método de registro
 @auth.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-
     correo = data.get('correo')
     if not correo:
         return {'mensaje': 'Correo requerido'}, 400
 
-    # Verificar si el correo ya existe en la base de datos
     exists = db.session.query(UsuarioModel).filter(UsuarioModel.correo == correo).first()
     if exists:
         return {'mensaje': 'Correo duplicado'}, 409
 
-    # Crear una nueva instancia de UsuarioModel
     nuevo_usuario = UsuarioModel(
         nombre=data.get('nombre'),
         correo=correo,
@@ -48,8 +44,6 @@ def register():
         telefono=data.get('telefono'),
         rol=data.get('rol')
     )
-
-    # Setear y hashear la contraseña
     nuevo_usuario.plain_contraseña = data.get('contraseña')
 
     try:
@@ -59,3 +53,24 @@ def register():
     except Exception as error:
         db.session.rollback()
         return {'mensaje': f'Error al registrar usuario: {str(error)}'}, 500
+
+#Método de registro
+@auth.route('/register_', methods=['POST'])
+def register_():
+    #Obtener usuario
+    usuario = UsuarioModel.from_json(request.get_json())
+    #Verificar si el mail ya existe en la db
+    exists = db.session.query(UsuarioModel).filter(UsuarioModel.correo == usuario.correo).scalar() is not None
+    if exists:
+        return 'Duplicated mail', 409
+    else:
+        try:
+            #Agregar usuario a DB
+            db.session.add(usuario)
+            db.session.commit()
+            #Enviar mail de bienvenida
+            send = sendMail([usuario.correo],"¡Bienvenido/a!",'register',usuario = usuario)
+        except Exception as error:
+            db.session.rollback()
+            return str(error), 409
+        return usuario.to_json() , 201
