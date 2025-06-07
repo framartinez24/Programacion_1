@@ -855,70 +855,33 @@
 					]
 				},
 				{
-					"name": "Notificaciones (GET, POST, PUT, DELETE)",
+					"name": "USUARIOS Filtros",
 					"item": [
 						{
-							"name": "GET - Todas las Notificaciones",
+							"name": "Filtrar usuarios por correo y rol",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
 								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:3535/notificaciones",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "3535",
-									"path": [
-										"notificaciones"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GET - Notificación por ID",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:3535/notificacion/1",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "3535",
-									"path": [
-										"notificacion",
-										"1"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "POST - Crear Notificación",
-							"request": {
-								"method": "POST",
 								"header": [
 									{
-										"key": "Content-Type",
-										"value": "application/json",
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
 										"type": "text"
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"mensaje\": \"¡Tienes un nuevo pedido!\",\n  \"usuario_id\": 1\n}"
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
 								},
 								"url": {
-									"raw": "http://127.0.0.1:3535/notificaciones",
+									"raw": "http://127.0.0.1:3535/usuarios?correo=@&rol=cliente&page=1&per_page=5",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -928,29 +891,55 @@
 									],
 									"port": "3535",
 									"path": [
-										"notificaciones"
+										"usuarios"
+									],
+									"query": [
+										{
+											"key": "correo",
+											"value": "@"
+										},
+										{
+											"key": "rol",
+											"value": "cliente"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "5"
+										}
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "PUT - Actualizar Notificación",
+							"name": "GET filtrar por ROL administrador",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
-								"method": "PUT",
+								"method": "GET",
 								"header": [
 									{
-										"key": "Content-Type",
-										"value": "application/json",
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
 										"type": "text"
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"mensaje\": \"Tu pedido fue entregado.\",\n  \"usuario_id\": 1\n}"
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
 								},
 								"url": {
-									"raw": "http://127.0.0.1:3535/notificacion/1",
+									"raw": "http://127.0.0.1:3535/usuarios?correo=@&rol=cliente&page=1&per_page=5",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -960,20 +949,55 @@
 									],
 									"port": "3535",
 									"path": [
-										"notificacion",
-										"1"
+										"usuarios"
+									],
+									"query": [
+										{
+											"key": "correo",
+											"value": "@"
+										},
+										{
+											"key": "rol",
+											"value": "cliente"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "5"
+										}
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "DELETE - Eliminar Notificación",
+							"name": "GET filtrar por ROL administrador pag 2",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
-								"method": "DELETE",
-								"header": [],
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "http://127.0.0.1:3535/notificacion/1",
+									"raw": "http://127.0.0.1:3535/usuarios?correo=@&rol=cliente&page=1&per_page=5",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -983,8 +1007,460 @@
 									],
 									"port": "3535",
 									"path": [
-										"notificacion",
+										"usuarios"
+									],
+									"query": [
+										{
+											"key": "correo",
+											"value": "@"
+										},
+										{
+											"key": "rol",
+											"value": "cliente"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get filtrar por ROL usuario",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:3535/usuarios?correo=@&rol=cliente&page=1&per_page=5",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
 										"1"
+									],
+									"port": "3535",
+									"path": [
+										"usuarios"
+									],
+									"query": [
+										{
+											"key": "correo",
+											"value": "@"
+										},
+										{
+											"key": "rol",
+											"value": "cliente"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get filtrar por ROL empleado 2 por pagina, pagina 2",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:3535/usuarios?correo=@&rol=cliente&page=1&per_page=5",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "3535",
+									"path": [
+										"usuarios"
+									],
+									"query": [
+										{
+											"key": "correo",
+											"value": "@"
+										},
+										{
+											"key": "rol",
+											"value": "cliente"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "PEDIDOS Filtros",
+					"item": [
+						{
+							"name": "GET /pedidos (con filtros y paginación)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/pedidos?estado=pendiente&fecha=2024-06-01&id_usuario=1&sortby_fecha=desc&page=1&per_page=10",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"pedidos"
+									],
+									"query": [
+										{
+											"key": "estado",
+											"value": "pendiente"
+										},
+										{
+											"key": "fecha",
+											"value": "2024-06-01"
+										},
+										{
+											"key": "id_usuario",
+											"value": "1"
+										},
+										{
+											"key": "sortby_fecha",
+											"value": "desc"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET filtrar pedidos por estado pendiente",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/pedidos?estado=pendiente&fecha=2024-06-01&id_usuario=1&sortby_fecha=desc&page=1&per_page=10",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"pedidos"
+									],
+									"query": [
+										{
+											"key": "estado",
+											"value": "pendiente"
+										},
+										{
+											"key": "fecha",
+											"value": "2024-06-01"
+										},
+										{
+											"key": "id_usuario",
+											"value": "1"
+										},
+										{
+											"key": "sortby_fecha",
+											"value": "desc"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET filtrar pedidos por estado completado",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}http://127.0.0.1:3535/pedidos?estado=completado&fecha=&id_usuario=1&sortby_fecha=desc&page=1&per_page=10",
+									"protocol": "{{base_url}}http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "3535",
+									"path": [
+										"pedidos"
+									],
+									"query": [
+										{
+											"key": "estado",
+											"value": "completado"
+										},
+										{
+											"key": "fecha",
+											"value": ""
+										},
+										{
+											"key": "id_usuario",
+											"value": "1"
+										},
+										{
+											"key": "sortby_fecha",
+											"value": "desc"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET filtrar pedidos por estado devuelto",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:3535/pedidos?estado=devuelto&fecha=&id_usuario=1&sortby_fecha=desc&page=1&per_page=5",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "3535",
+									"path": [
+										"pedidos"
+									],
+									"query": [
+										{
+											"key": "estado",
+											"value": "devuelto"
+										},
+										{
+											"key": "fecha",
+											"value": ""
+										},
+										{
+											"key": "id_usuario",
+											"value": "1"
+										},
+										{
+											"key": "sortby_fecha",
+											"value": "desc"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET filtrar pedidos por fecha",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:3535/pedidos?estado=devuelto&fecha=&id_usuario=1&sortby_fecha=desc&page=1&per_page=5",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "3535",
+									"path": [
+										"pedidos"
+									],
+									"query": [
+										{
+											"key": "estado",
+											"value": "devuelto"
+										},
+										{
+											"key": "fecha",
+											"value": ""
+										},
+										{
+											"key": "id_usuario",
+											"value": "1"
+										},
+										{
+											"key": "sortby_fecha",
+											"value": "desc"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET filtrar pedidos por Id usuario",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:3535/pedidos?estado=devuelto&fecha=&id_usuario=1&sortby_fecha=desc&page=1&per_page=5",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "3535",
+									"path": [
+										"pedidos"
+									],
+									"query": [
+										{
+											"key": "estado",
+											"value": "devuelto"
+										},
+										{
+											"key": "fecha",
+											"value": ""
+										},
+										{
+											"key": "id_usuario",
+											"value": "1"
+										},
+										{
+											"key": "sortby_fecha",
+											"value": "desc"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "5"
+										}
 									]
 								}
 							},
