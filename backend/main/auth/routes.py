@@ -1,8 +1,9 @@
 from flask import request, jsonify, Blueprint
 from .. import db
 from main.models import UsuarioModel
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, create_refresh_token
 from main.mail.functions import sendMail
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -19,12 +20,29 @@ def login():
     if not usuario or not usuario.validate_pass(contraseña):
         return {'mensaje': 'Correo o contraseña inválidos'}, 401
 
-    access_token = create_access_token(identity=usuario)
+
+    access_token = create_access_token(identity=str(usuario.id))
+    refresh_token = create_refresh_token(identity=str(usuario.id))
+
     return jsonify({
         'id': usuario.id,
         'correo': usuario.correo,
-        'access_token': access_token
+        'access_token': access_token,
+        'refresh_token': refresh_token
     }), 200
+
+@auth.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    print("identity:", get_jwt_identity())
+    print("jwt:", get_jwt())
+    current_user_id = str(get_jwt_identity())
+    new_access_token = str(create_access_token(identity=current_user_id))
+    return jsonify({
+        'access_token': str(new_access_token)
+    }), 200
+
+
 
 @auth.route('/register', methods=['POST'])
 def register():

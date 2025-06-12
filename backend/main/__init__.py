@@ -54,6 +54,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'clave-flask-segura')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'clave-jwt-supersegura')
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600)))
+    app.config['JWT_REFRESH_TOKEN_EXPIRES'] = 3600   # 1hora 
     jwt.init_app(app)
 
     #Configuración de mail
