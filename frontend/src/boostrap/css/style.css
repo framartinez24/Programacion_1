@@ -1,0 +1,76 @@
+/* Colores de marca */
+:root {
+  --color-principal: #ff5722; /* Naranja */
+  --color-secundario: #4caf50; /* Verde */
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Tarjeta de login */
+.login-card {
+  max-width: 400px;
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  border: none;
+}
+
+.brand-text {
+  color: var(--color-principal);
+  font-weight: bold;
+}
+
+.btn-primary {
+  background-color: var(--color-principal);
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #e64a19;
+}
+
+
+
+.card img {
+  border-radius: 10px 10px 0 0;
+  object-fit: cover;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.add-to-cart {
+  background-color: var(--color-principal);
+  border: none;
+}
+
+.add-to-cart:hover {
+  background-color: #e64a19;
+}
+
+
+
+.list-group-item {
+  border: none;
+  border-bottom: 1px solid #eee;
+}
+
+.card h5 {
+  color: var(--color-principal);
+}
+
+/* Mantener consistencia con login */
+.card {
+  border-radius: 20px;
+}
+
+.card h3 {
+  color: var(--color-principal);
+  font-weight: bold;
+}
+

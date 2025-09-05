@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RotiYa - Administración</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navbar superior -->
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand">Panel de Administración</a>
+      <a href="menu.html" class="btn btn-outline-light">Volver al Menú</a>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Menú lateral -->
+      <aside class="col-md-3 col-lg-2 bg-light p-3 border-end" style="min-height: 100vh;">
+        <h5 class="mb-3 brand-text">RotiYa Admin</h5>
+        <div class="list-group">
+          <button class="list-group-item list-group-item-action" onclick="showAdminPage('stock')">Stock</button>
+          <button class="list-group-item list-group-item-action" onclick="showAdminPage('clientes')">Clientes</button>
+          <button class="list-group-item list-group-item-action" onclick="showAdminPage('pedidos')">Pedidos</button>
+          <button class="list-group-item list-group-item-action" onclick="showAdminPage('empleados')">Empleados</button>
+        </div>
+      </aside>
+
+      <!-- Contenido -->
+      <main class="col-md-9 col-lg-10 p-4">
+        
+        <!-- Stock -->
+        <div id="stock" class="admin-page">
+          <h3>Stock</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Empanadas de carne</td>
+                <td>Parrilla</td>
+                <td>99</td>
+              </tr>
+              <tr>
+                <td>Nachos</td>
+                <td>Entradas</td>
+                <td>25</td>
+              </tr>
+              <tr>
+                <td>Pollo a la parrilla</td>
+                <td>Parrilla</td>
+                <td>10</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Clientes -->
+        <div id="clientes" class="admin-page d-none">
+          <h3>Clientes</h3>
+          <ul class="list-group">
+            <li class="list-group-item">Laura</li>
+            <li class="list-group-item">Roberto</li>
+            <li class="list-group-item">Lautaro</li>
+          </ul>
+        </div>
+
+        <!-- Pedidos -->
+        <div id="pedidos" class="admin-page d-none">
+          <h3>Pedidos</h3>
+          <div class="list-group">
+            <div class="list-group-item">
+              <strong>29/11/24 15:00</strong> - Pollo a la parrilla, Empanadas de carne
+              <span class="badge bg-success float-end">Entregado</span>
+            </div>
+            <div class="list-group-item">
+              <strong>29/11/24 12:00</strong> - Nachos con salsa
+              <span class="badge bg-warning float-end">Pendiente</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empleados -->
+        <div id="empleados" class="admin-page d-none">
+          <h3>Empleados</h3>
+          <ul class="list-group">
+            <li class="list-group-item">Laura - Cocina</li>
+            <li class="list-group-item">Roberto - Delivery</li>
+            <li class="list-group-item">Lautaro - Atención</li>
+          </ul>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
