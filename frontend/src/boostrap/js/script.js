@@ -44,15 +44,15 @@ if (botones) {
 }
 
 // -------- CARRITO --------
-const cartCount = document.getElementById("cart-count");
-const confirmButton = document.querySelector(".btn-success");
+// const cartCount = document.getElementById("cart-count");
+// const confirmButton = document.querySelector(".btn-success");
 
-if (confirmButton && cartCount) {
-  confirmButton.addEventListener("click", () => {
-    alert("✅ Pedido confirmado");
-    cartCount.textContent = "0"; // vaciar carrito
-  });
-}
+// if (confirmButton && cartCount) {
+//   confirmButton.addEventListener("click", () => {
+//     alert("✅ Pedido confirmado");
+//     cartCount.textContent = "0"; // vaciar carrito
+//   });
+// }
 
 
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RotiYa - Recuperar contraseña</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card login-card p-4" style="max-width: 420px; width: 100%;">
+      <h3 class="text-center mb-2 brand-text">Recuperar contraseña</h3>
+      <p class="text-muted text-center mb-4">
+        Ingresá tu <strong>correo</strong> o <strong>teléfono</strong> y te enviaremos un enlace/código para restablecer tu contraseña.
+      </p>
+
+      <div id="alertBox" class="alert alert-success d-none" role="alert">
+        Si existe una cuenta asociada, enviamos un enlace de recuperación. Revisá tu bandeja de entrada o SMS.
+      </div>
+
+      <form id="recoverForm">
+        <div class="mb-3">
+          <label for="identifier" class="form-label">Correo o Teléfono</label>
+          <input type="text" class="form-control" id="identifier" placeholder="ej: usuario@mail.com o +54 9 261 000 0000" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+          Enviar enlace de recuperación
+        </button>
+      </form>
+
+      <div class="text-center mt-3">
+        <a href="index.html">Volver al inicio de sesión</a>
+      </div>
+
+      <hr>
+      <p class="text-center mb-0">¿No tienes una cuenta? <a href="registro.html">Regístrate</a></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Simulación de envío: muestra un aviso y limpia el campo
+    document.getElementById('recoverForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const input = document.getElementById('identifier');
+      if (!input.value.trim()) return;
+
+      const alertBox = document.getElementById('alertBox');
+      alertBox.classList.remove('d-none');
+      input.value = '';
+    });
+  </script>
+</body>
+</html>

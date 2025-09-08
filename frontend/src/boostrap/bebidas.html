@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RotiYa - Bebidas</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    body { padding-bottom: 72px; } /* espacio para la navbar inferior */
+  </style>
+</head>
+<body class="bg-light">
+
+  <!-- Navbar superior -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">RotiYa</a>
+      <a href="carrito.html" class="btn btn-outline-light ms-auto">
+        Carrito <span class="badge bg-danger">2</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Contenido -->
+  <div class="container py-5">
+    <h2 class="mb-4 text-center brand-text">Bebidas</h2>
+
+    <!-- Panel de categorías -->
+    <div class="bg-white border rounded shadow-sm mb-4">
+      <div class="container py-2">
+        <ul class="nav nav-pills nav-justified">
+          <li class="nav-item">
+            <a class="nav-link" href="entrada.html">Entrada</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="menu.html">Plato principal</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="postres.html">Postres</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="bebidas.html">Bebidas</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Productos de Bebidas -->
+    <div class="row g-4">
+      <!-- Bebida 1 -->
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <img src="https://www.splenda.com/wp-content/themes/bistrotheme/assets/recipe-images/homemade-mint-lemonade-2000w.jpg" class="card-img-top" alt="Limonada">
+          <div class="card-body">
+            <h5 class="card-title">Limonada casera</h5>
+            <p class="card-text">Refrescante limonada con jugo natural de limón y menta fresca.</p>
+            <p class="text-success fw-bold">$3.50</p>
+            <button class="btn btn-primary w-100 add-to-cart">Añadir</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bebida 2 -->
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <img src="https://www.infobae.com/resizer/v2/https%3A%2F%2Fs3.amazonaws.com%2Farc-wordpress-client-uploads%2Finfobae-wp%2Fwp-content%2Fuploads%2F2017%2F07%2F06123915%2Fcerveza-1920-2.jpg?auth=fa59af8ab8767172c348d67c2d7e376fbce5c6cf943df35c0070347b7ccb989d&smart=true&width=992&height=558&quality=85" class="card-img-top" alt="Cerveza artesanal">
+          <div class="card-body">
+            <h5 class="card-title">Cerveza artesanal</h5>
+            <p class="card-text">Cerveza rubia elaborada localmente con malta seleccionada.</p>
+            <p class="text-success fw-bold">$4.80</p>
+            <button class="btn btn-primary w-100 add-to-cart">Añadir</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bebida 3 -->
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <img src="https://www.novachef.es/media/images/espresso-macchiato.jpg" class="card-img-top" alt="Café espresso">
+          <div class="card-body">
+            <h5 class="card-title">Café espresso</h5>
+            <p class="card-text">Café intenso preparado con granos seleccionados recién molidos.</p>
+            <p class="text-success fw-bold">$2.20</p>
+            <button class="btn btn-primary w-100 add-to-cart">Añadir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar inferior fija -->
+  <nav class="navbar fixed-bottom bg-white border-top shadow-sm">
+    <div class="container px-0">
+      <ul class="nav nav-justified w-100 text-center">
+        <li class="nav-item">
+          <a class="nav-link py-2" href="menu.html">
+            <i class="bi bi-house-door fs-5 d-block"></i>
+            <small>Inicio</small>
+          </a>
+        </li>
+        <li class="nav-item">
+          <!-- Menú activo en esta categoría -->
+          <a class="nav-link py-2 active" href="bebidas.html">
+            <i class="bi bi-list-ul fs-5 d-block"></i>
+            <small>Menú</small>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link py-2 position-relative" href="carrito.html">
+            <i class="bi bi-cart fs-5 d-block"></i>
+            <small>Carrito</small>
+            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger">2</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link py-2" href="perfil.html">
+            <i class="bi bi-person fs-5 d-block"></i>
+            <small>Perfil</small>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

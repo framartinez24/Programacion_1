@@ -6,7 +6,15 @@
   <title>RotiYa - Carrito</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { padding-bottom: 72px; } /* alto aprox de la bottom bar */
+    .qty-group .btn { width: 2.25rem; height: 2.25rem; line-height: 1; padding: 0; }
+    .qty-input { width: 3rem; text-align: center; }
+    .price-sm { font-size: .9rem; }
+  </style>
 </head>
 <body class="bg-light">
 
@@ -14,7 +22,9 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="menu.html">RotiYa</a>
-      <button class="btn btn-outline-light ms-auto">Carrito <span class="badge bg-danger" id="cart-count">2</span></button>
+      <a class="btn btn-outline-light ms-auto" href="carrito.html">
+        Carrito <span class="badge bg-danger" id="cart-count">2</span>
+      </a>
     </div>
   </nav>
 
@@ -23,20 +33,47 @@
     <h2 class="mb-4 text-center brand-text">Tu Carrito</h2>
 
     <!-- Lista de productos -->
-    <div class="list-group mb-4">
-      <div class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
+    <div class="list-group mb-4" id="cart-list">
+      <!-- Item 1 -->
+      <div class="list-group-item d-flex justify-content-between align-items-center cart-item"
+           data-price="20.00">
+        <div class="me-3">
           <h6 class="mb-1">Pollo a la parrilla</h6>
-          <small>$20.00</small>
+          <small class="text-muted price-sm">
+            Precio unidad: $<span class="unit-price">20.00</span>
+          </small>
+          <div class="text-muted price-sm">Subtotal: $<span class="line-total">20.00</span></div>
         </div>
-        <span class="badge bg-secondary rounded-pill">1</span>
+        <div class="d-flex align-items-center qty-group">
+          <button class="btn btn-outline-secondary btn-sm btn-dec" aria-label="Restar 1">
+            <i class="bi bi-dash"></i>
+          </button>
+          <input class="form-control form-control-sm mx-2 qty-input" type="text" value="1" inputmode="numeric" aria-label="Cantidad" readonly>
+          <button class="btn btn-outline-secondary btn-sm btn-inc" aria-label="Sumar 1">
+            <i class="bi bi-plus"></i>
+          </button>
+        </div>
       </div>
-      <div class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
+
+      <!-- Item 2 -->
+      <div class="list-group-item d-flex justify-content-between align-items-center cart-item"
+           data-price="12.00">
+        <div class="me-3">
           <h6 class="mb-1">Empanadas de carne</h6>
-          <small>$12.00</small>
+          <small class="text-muted price-sm">
+            Precio unidad: $<span class="unit-price">12.00</span>
+          </small>
+          <div class="text-muted price-sm">Subtotal: $<span class="line-total">24.00</span></div>
         </div>
-        <span class="badge bg-secondary rounded-pill">2</span>
+        <div class="d-flex align-items-center qty-group">
+          <button class="btn btn-outline-secondary btn-sm btn-dec" aria-label="Restar 1">
+            <i class="bi bi-dash"></i>
+          </button>
+          <input class="form-control form-control-sm mx-2 qty-input" type="text" value="2" inputmode="numeric" aria-label="Cantidad" readonly>
+          <button class="btn btn-outline-secondary btn-sm btn-inc" aria-label="Sumar 1">
+            <i class="bi bi-plus"></i>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -46,19 +83,111 @@
       <hr>
       <div class="d-flex justify-content-between">
         <span>Subtotal</span>
-        <span>$44.00</span>
+        <span>$<span id="subtotal">44.00</span></span>
       </div>
       <hr>
       <div class="d-flex justify-content-between fw-bold">
         <span>Total</span>
-        <span>$44.00</span>
+        <span>$<span id="total">44.00</span></span>
       </div>
-      <button class="btn btn-success w-100 mt-3">Confirmar orden</button>
+      <!-- Botón actualizado: Ir a pagar => pago.html (sin pushup ni JS extra) -->
+      <a href="pago.html" class="btn btn-success w-100 mt-3">Ir a pagar</a>
     </div>
   </div>
 
+  <!-- Barra de navegación inferior fija -->
+  <nav class="navbar fixed-bottom bg-white border-top shadow-sm">
+    <div class="container px-0">
+      <ul class="nav nav-justified w-100 text-center">
+        <li class="nav-item">
+          <a class="nav-link py-2" href="menu.html">
+            <i class="bi bi-house-door fs-5 d-block"></i>
+            <small>Inicio</small>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link py-2" href="menu.html">
+            <i class="bi bi-list-ul fs-5 d-block"></i>
+            <small>Menú</small>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link py-2 position-relative active" href="carrito.html">
+            <i class="bi bi-cart fs-5 d-block"></i>
+            <small>Carrito</small>
+            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger" id="bottom-cart-count">2</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link py-2" href="perfil.html">
+            <i class="bi bi-person fs-5 d-block"></i>
+            <small>Perfil</small>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Lógica de cantidades y totales -->
+  <script>
+    (function () {
+      const fmt = (n) => (Number(n).toFixed(2));
+      const cartItems = Array.from(document.querySelectorAll('.cart-item'));
+      const subtotalEl = document.getElementById('subtotal');
+      const totalEl = document.getElementById('total');
+      const cartCountTop = document.getElementById('cart-count');
+      const cartCountBottom = document.getElementById('bottom-cart-count');
+
+      function recalc() {
+        let subtotal = 0;
+        let itemsCount = 0;
+
+        cartItems.forEach(item => {
+          const unit = parseFloat(item.dataset.price);
+          const qtyInput = item.querySelector('.qty-input');
+          const qty = Math.max(0, parseInt(qtyInput.value || '0', 10));
+          const line = unit * qty;
+          item.querySelector('.line-total').textContent = fmt(line);
+          subtotal += line;
+          itemsCount += qty;
+        });
+
+        subtotalEl.textContent = fmt(subtotal);
+        totalEl.textContent = fmt(subtotal); // si luego agregás envío/impuestos, cámbialo acá
+
+        // Actualizar badges de carrito
+        if (cartCountTop) cartCountTop.textContent = itemsCount;
+        if (cartCountBottom) cartCountBottom.textContent = itemsCount;
+      }
+
+      function bindItem(item) {
+        const dec = item.querySelector('.btn-dec');
+        const inc = item.querySelector('.btn-inc');
+        const qtyInput = item.querySelector('.qty-input');
+
+        dec.addEventListener('click', () => {
+          let v = parseInt(qtyInput.value, 10) || 0;
+          v = Math.max(0, v - 1);
+          qtyInput.value = v;
+          recalc();
+        });
+
+        inc.addEventListener('click', () => {
+          let v = parseInt(qtyInput.value, 10) || 0;
+          qtyInput.value = v + 1;
+          recalc();
+        });
+      }
+
+      cartItems.forEach(bindItem);
+      recalc(); // cálculo inicial
+    })();
+  </script>
+
+  <!-- (opcional) tu script global -->
   <script src="js/script.js"></script>
 </body>
 </html>
