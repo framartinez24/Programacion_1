@@ -1,19 +1,48 @@
 // -------- LOGIN --------
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
+  const loginError = document.getElementById("loginError");
+  const emailInput = document.getElementById("email");
+
+  // Fuerza minúsculas mientras el usuario escribe (sin mover el cursor)
+  if (emailInput) {
+    emailInput.addEventListener("input", (e) => {
+      const pos = e.target.selectionStart;
+      e.target.value = e.target.value.toLowerCase();
+      // restaura la posición del cursor
+      e.target.setSelectionRange(pos, pos);
+    });
+  }
+
+  const showError = () => { if (loginError) loginError.classList.remove("d-none"); };
+  const hideError = () => { if (loginError) loginError.classList.add("d-none"); };
+
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    hideError();
 
-    if (email === "RotiYa@example.com" && password === "1234") {
-      alert("✅ Bienvenido a RotiYa!");
-      window.location.href = "menu.html"; // redirigir al menú
-    } else {
-      alert("❌ Credenciales incorrectas. Intenta nuevamente.");
+    const email = (emailInput?.value || "").trim().toLowerCase();
+    const password = (document.getElementById("password")?.value || "").trim();
+
+    // Caso admin -> admin.html (email y pass en minúsculas)
+    if (email === "admin@rotiya.com" && password === "admin") {
+      window.location.href = "admin.html";
+      return;
     }
+
+    // Usuario normal válido (insensible a mayúsculas) -> menu.html
+    if (email === "rotiya@gmail.com" && password === "1234") {
+      alert("✅ Bienvenido a RotiYa!"); 
+      window.location.href = "menu.html";
+      return;
+    }
+
+    // Cualquier otra combinación (incluye vacíos) -> falla
+    showError();
   });
 }
+
+
 
 // -------- REGISTRO --------
 const registerForm = document.getElementById("registerForm");

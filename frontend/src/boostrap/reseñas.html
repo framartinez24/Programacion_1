@@ -5,13 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>RotiYa - Reseñas</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons (para los íconos de la barra inferior) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Padding para que el contenido no quede tapado por la barra inferior -->
   <style>
-    body { padding-bottom: 72px; } /* alto aprox de la bottom bar */
+    body { padding-bottom: 72px; }
+    .review-thumb{ width:64px; height:64px; object-fit:cover; border-radius:8px; }
+    .stars i{ margin-right:2px; }
+    /* Selector de estrellas (1–5) */
+    .rating { direction: rtl; unicode-bidi: bidi-override; display:inline-flex; gap:.15rem; }
+    .rating input { display:none; }
+    .rating label { font-size:1.6rem; color:#d6d6d6; cursor:pointer; line-height:1; }
+    .rating label::before { content:"★"; }
+    .rating input:checked ~ label,
+    .rating label:hover,
+    .rating label:hover ~ label { color:#f5c518; }
+    @media (max-width:576px){ .review-thumb{ width:56px; height:56px; } }
   </style>
 </head>
 <body class="bg-light">
@@ -19,89 +28,235 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-      <a class="navbar-brand" href="menu.html">RotiYa</a>
-      <a class="btn btn-outline-light ms-auto" href="carrito.html">Carrito</a>
+      <a class="navbar-brand" href="menu.html">
+        <img src="rotiya2.png" alt="RotiYa" height="32" class="d-inline-block align-text-top">
+      </a>
+      <a href="carrito.html" class="btn btn-outline-light ms-auto">
+        Carrito <span class="badge bg-danger">2</span>
+      </a>
     </div>
   </nav>
 
   <div class="container py-5">
     <h2 class="text-center brand-text mb-4">Reseñas de productos</h2>
 
-    <!-- Reseñas existentes -->
-    <div class="list-group mb-4">
-      <div class="list-group-item">
-        <h6 class="mb-1">Pollo a la parrilla</h6>
-        <small class="text-muted">Roberto</small>
-        <p class="mb-1">Excelente, llegó caliente y en su punto 👌</p>
+    <!-- Resumen por producto -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h5 class="mb-3">Resumen por producto</h5>
+        <div id="summary" class="row g-3">
+          <!-- Se llena por JS -->
+        </div>
       </div>
-      <div class="list-group-item">
-        <h6 class="mb-1">Empanadas de carne</h6>
-        <small class="text-muted">Laura</small>
-        <p class="mb-1">Muy ricas, masa crocante y relleno abundante.</p>
-      </div>
-      <div class="list-group-item">
-        <h6 class="mb-1">Nachos con salsa</h6>
-        <small class="text-muted">Lautaro</small>
-        <p class="mb-1">Las salsas estaban espectaculares, repetiría.</p>
-      </div>
+    </div>
+
+    <!-- Reseñas existentes / nuevas -->
+    <div class="list-group mb-4" id="reviewsList">
+      <!-- Reseñas renderizadas por JS -->
     </div>
 
     <!-- Formulario nueva reseña -->
     <div class="card p-4 shadow-sm">
-      <h5>Deja tu reseña</h5>
+      <h5 class="mb-3">Deja tu reseña</h5>
       <form id="reviewForm">
-        <div class="mb-3">
-          <label for="product" class="form-label">Producto</label>
-          <select id="product" class="form-select" required>
-            <option value="">Selecciona un producto</option>
-            <option>Pollo a la parrilla</option>
-            <option>Empanadas de carne</option>
-            <option>Nachos con salsa</option>
-          </select>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="product" class="form-label">Producto</label>
+            <select id="product" class="form-select" required>
+              <option value="">Selecciona un producto</option>
+              <option>Pollo a la parrilla</option>
+              <option>Empanadas de carne</option>
+              <option>Nachos con salsa</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Calificación</label>
+            <div class="rating" aria-label="Selecciona entre 1 y 5 estrellas">
+              <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 estrellas"></label>
+              <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 estrellas"></label>
+              <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 estrellas"></label>
+              <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 estrellas"></label>
+              <input type="radio" id="star1" name="rating" value="1" checked><label for="star1" title="1 estrella"></label>
+            </div>
+          </div>
+          <div class="col-12">
+            <label for="author" class="form-label">Tu nombre (opcional)</label>
+            <input id="author" class="form-control" placeholder="Anónimo">
+          </div>
+          <div class="col-12">
+            <label for="reviewText" class="form-label">Comentario</label>
+            <textarea id="reviewText" class="form-control" rows="3" required></textarea>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary w-100">Publicar reseña</button>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="reviewText" class="form-label">Comentario</label>
-          <textarea id="reviewText" class="form-control" rows="3" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Publicar reseña</button>
       </form>
     </div>
   </div>
 
-    <!-- Barra de navegación inferior fija -->
-  <nav class="navbar fixed-bottom bg-white border-top shadow-sm">
-    <div class="container px-0">
-      <ul class="nav nav-justified w-100 text-center">
-        <li class="nav-item">
-          <a class="nav-link py-2" href="index.html">
-            <i class="bi bi-house-door fs-5 d-block"></i>
-            <small>Inicio</small>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link py-2 active" href="menu.html">
-            <i class="bi bi-list-ul fs-5 d-block"></i>
-            <small>Menú</small>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link py-2 position-relative" href="carrito.html">
-            <i class="bi bi-cart fs-5 d-block"></i>
-            <small>Carrito</small>
-            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger">2</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link py-2" href="perfil.html">
-            <i class="bi bi-person fs-5 d-block"></i>
-            <small>Perfil</small>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <!-- Barra inferior -->
+<nav class="navbar fixed-bottom bg-white border-top shadow-sm">
+  <div class="container px-0">
+    <ul class="nav nav-justified w-100 text-center">
+      <li class="nav-item">
+        <a class="nav-link py-2" href="menu.html">
+          <i class="bi bi-house-door fs-5 d-block"></i>
+          <small>Inicio</small>
+        </a>
+      </li>
+      <li class="nav-item">
+        <!-- Menú despliega el panel de categorías -->
+        <a class="nav-link py-2 active" href="#menuCategories"
+           data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="menuCategories">
+          <i class="bi bi-list-ul fs-5 d-block"></i>
+          <small>Menú</small>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link py-2 position-relative" href="carrito.html">
+          <i class="bi bi-cart fs-5 d-block"></i>
+          <small>Carrito</small>
+          <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger">2</span>
+        </a>
+      </li>
+
+      <!-- NUEVO: Reseñas -->
+      <li class="nav-item">
+        <a class="nav-link py-2" href="reseñas.html">
+          <i class="bi bi-heart fs-5 d-block"></i>
+          <small>Reseñas</small>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link py-2" href="perfil.html">
+          <i class="bi bi-person fs-5 d-block"></i>
+          <small>Perfil</small>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/script.js"></script>
+  <script>
+    // --- Config productos e imágenes (se usan para miniatura automática) ---
+    const productImages = {
+      'Pollo a la parrilla': 'https://lareceta.com.ar/uploads/notas/phpDPicu2.jpg',
+      'Empanadas de carne' : 'https://www.bekiacocina.com/images/cocina/0000/265-h.jpg',
+      'Nachos con salsa'   : 'https://www.bekiacocina.com/images/cocina/0000/607-h.jpg'
+    };
+
+    // --- Estado con localStorage (para persistencia simple) ---
+    const LS_KEY = 'rotiya_reviews_v1';
+    function loadReviews(){
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) { try { return JSON.parse(raw); } catch(e){} }
+      // Reseñas de ejemplo con calificación
+      return [
+        { product:'Pollo a la parrilla', author:'Roberto', text:'Excelente, llegó caliente y en su punto 👌', rating:5, date:Date.now()-3e7 },
+        { product:'Empanadas de carne',  author:'Laura',   text:'Muy ricas, masa crocante y relleno abundante.', rating:4, date:Date.now()-2e7 },
+        { product:'Nachos con salsa',    author:'Lautaro', text:'Las salsas estaban espectaculares, repetiría.', rating:5, date:Date.now()-1e7 }
+      ];
+    }
+    function saveReviews(){ localStorage.setItem(LS_KEY, JSON.stringify(reviews)); }
+
+    let reviews = loadReviews();
+
+    // --- Utilidades ---
+    const $ = (s, r=document)=>r.querySelector(s);
+    const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+    const starIcons = (n) => {
+      const full = '<i class="bi bi-star-fill"></i>'.repeat(n);
+      const empty = '<i class="bi bi-star"></i>'.repeat(5-n);
+      return full + empty;
+    };
+    const formatDate = ts => new Date(ts).toLocaleDateString('es-AR', {year:'numeric', month:'2-digit', day:'2-digit'});
+
+    // --- Render de reseñas ---
+    function renderReviews(){
+      const list = $('#reviewsList');
+      list.innerHTML = '';
+      // Orden: más recientes arriba
+      const sorted = [...reviews].sort((a,b)=>b.date - a.date);
+      sorted.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'list-group-item';
+        item.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="me-3">
+              <h6 class="mb-1">${r.product}</h6>
+              <div class="stars text-warning mb-1" aria-label="${r.rating} estrellas">${starIcons(r.rating)}</div>
+              <small class="text-muted">${r.author || 'Anónimo'} · ${formatDate(r.date)}</small>
+              <p class="mb-1 mt-2">${r.text}</p>
+            </div>
+            ${productImages[r.product] ? `<img class="review-thumb ms-3" src="${productImages[r.product]}" alt="${r.product}">` : ''}
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    // --- Resumen por producto (promedio y cantidad) ---
+    function renderSummary(){
+      const byProduct = {};
+      Object.keys(productImages).forEach(p => byProduct[p] = { sum:0, count:0 });
+
+      reviews.forEach(r => {
+        if(!byProduct[r.product]) byProduct[r.product] = { sum:0, count:0 };
+        byProduct[r.product].sum += r.rating;
+        byProduct[r.product].count++;
+      });
+
+      const summary = $('#summary');
+      summary.innerHTML = '';
+      Object.keys(byProduct).forEach(prod => {
+        const {sum, count} = byProduct[prod];
+        const avg = count ? Math.round(sum / count) : 0; // entero 0-5
+        const col = document.createElement('div');
+        col.className = 'col-sm-6 col-lg-4';
+        col.innerHTML = `
+          <div class="d-flex align-items-center border rounded p-2 h-100">
+            <img src="${productImages[prod]}" class="me-3" alt="${prod}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;">
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-center">
+                <strong>${prod}</strong>
+                <span class="text-warning stars" aria-hidden="true">${starIcons(avg)}</span>
+              </div>
+              <small class="text-muted">${count} reseña${count===1?'':'s'}</small>
+            </div>
+          </div>
+        `;
+        summary.appendChild(col);
+      });
+    }
+
+    // --- Manejo del formulario ---
+    $('#reviewForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const product = $('#product').value;
+      const author  = $('#author').value.trim();
+      const text    = $('#reviewText').value.trim();
+      const rating  = Number(($('input[name="rating"]:checked') || {value:1}).value);
+
+      if(!product || !text) return;
+
+      reviews.push({ product, author, text, rating, date: Date.now() });
+      saveReviews();
+      e.target.reset();
+      // dejar 1 estrella por defecto otra vez
+      $('#star1').checked = true;
+
+      renderReviews();
+      renderSummary();
+      // scroll a la lista para ver la reseña
+      window.scrollTo({ top: $('#reviewsList').offsetTop - 16, behavior: 'smooth' });
+    });
+
+    // --- Init ---
+    renderReviews();
+    renderSummary();
+  </script>
 </body>
 </html>
