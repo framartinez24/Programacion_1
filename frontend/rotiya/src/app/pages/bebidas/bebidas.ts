@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-
+import { MenuCategories } from '../../shared/menu-categories/menu-categories';
 @Component({
   selector: 'app-bebidas',
-  imports: [],
+  imports: [MenuCategories],
   templateUrl: './bebidas.html',
-  styleUrl: './bebidas.scss'
+  styleUrls: ['./bebidas.scss']
 })
 export class Bebidas {
 

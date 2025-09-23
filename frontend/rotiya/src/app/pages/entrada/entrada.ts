@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
+import { MenuCategories } from '../../shared/menu-categories/menu-categories';      
 
 @Component({
   selector: 'app-entrada',
-  imports: [],
+  imports: [MenuCategories],
   templateUrl: './entrada.html',
-  styleUrl: './entrada.scss'
+  styleUrls: ['./entrada.scss']
 })
 export class Entrada {
 

@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'menu', pathMatch: 'full' },
-
   { path: 'menu',    loadComponent: () => import('./pages/menu/menu').then(m => m.Menu) },
   { path: 'carrito', loadComponent: () => import('./pages/carrito/carrito').then(m => m.Carrito) },
   { path: 'perfil',  loadComponent: () => import('./pages/perfil/perfil').then(m => m.Perfil) },
@@ -14,6 +13,6 @@ export const routes: Routes = [
   { path: 'pago',    loadComponent: () => import('./pages/pago/pago').then(m => m.Pago) },
   { path: 'admin',   loadComponent: () => import('./pages/admin/admin').then(m => m.Admin) },
   { path: 'login',   loadComponent: () => import('./pages/login/login').then(m => m.Login) },
-  { path: 'restore',   loadComponent: () => import('./pages/restore/restore').then(m => m.Restore) },
+  { path: 'restore', loadComponent: () => import('./pages/restore/restore').then(m => m.Restore) },
   { path: '**', redirectTo: 'menu' }
 ];
