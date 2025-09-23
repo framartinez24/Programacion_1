@@ -1,19 +1,30 @@
-      <!-- Panel de categorías -->
-      <div class="bg-white border rounded shadow-sm mb-4">
-        <div class="container py-2">
-          <ul class="nav nav-pills nav-justified">
-            <li class="nav-item">
-              <a class="nav-link" href="/entrada">Entrada</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/menu">Plato principal</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/postres">Postres</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/bebidas">Bebidas</a>
-            </li>
-          </ul>
-        </div>
-      </div>
+<div class="bg-white border rounded shadow-sm mb-4">
+  <div class="container py-2">
+    <ul class="nav nav-pills nav-justified">
+      <li class="nav-item">
+        <a class="nav-link"
+           routerLink="/entrada"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">Entrada</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link"
+           routerLink="/menu"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">Plato principal</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link"
+           routerLink="/postres"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">Postres</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link"
+           routerLink="/bebidas"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">Bebidas</a>
+      </li>
+    </ul>
+  </div>
+</div>

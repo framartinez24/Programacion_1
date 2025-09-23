@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { MenuCategories } from '../../shared/menu-categories/menu-categories';
+import { MenuCategoriesComponent } from '../../shared/menu-categories/menu-categories';
 
 @Component({
   selector: 'app-postres',
-  imports: [MenuCategories],
+  imports: [MenuCategoriesComponent],
   templateUrl: './postres.html',
   styleUrl: './postres.scss'
 })

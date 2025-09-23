@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { MenuCategories } from '../../shared/menu-categories/menu-categories';
+import { MenuCategoriesComponent } from '../../shared/menu-categories/menu-categories';
 
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [MenuCategories],
+  imports: [MenuCategoriesComponent],
   templateUrl: './menu.html',
   styleUrl: './menu.scss'
 })
