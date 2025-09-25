@@ -1,0 +1,26 @@
+// 1. Importamos el módulo 'color' de SASS, que es la forma moderna de hacerlo.
+@use "sass:color";
+
+// Variable para nuestro color naranja personalizado.
+$naranja-rotiya: #fd7e14;
+
+// Clase para el texto del título "Iniciar Sesión".
+.brand-text {
+  color: $naranja-rotiya !important;
+  font-weight: bold;
+}
+
+// Clase para nuestro botón personalizado.
+.btn-rotiya {
+  background-color: $naranja-rotiya;
+  border-color: $naranja-rotiya;
+  color: white;
+
+  // Efecto visual cuando pasas el mouse por encima.
+  &:hover {
+    // 2. Usamos la función moderna 'color.adjust' en lugar de 'darken'.
+    background-color: color.adjust($naranja-rotiya, $lightness: -10%);
+    border-color: color.adjust($naranja-rotiya, $lightness: -10%);
+  }
+}
+

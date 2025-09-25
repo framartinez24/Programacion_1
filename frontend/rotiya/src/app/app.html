@@ -1,3 +1,18 @@
-<app-navbar></app-navbar>
-<router-outlet></router-outlet>
-<app-bottom-bar></app-bottom-bar>
+<!--
+  Usamos el nuevo @if de Angular.
+  Si showLayout() es `true`, se muestra todo lo que está adentro.
+-->
+@if (showLayout()) {
+  <!-- Navbar solo se mostrará en las páginas que no son de login -->
+  <app-navbar></app-navbar>
+}
+
+<main>
+  <!-- El router-outlet SIEMPRE está presente, para renderizar todas las páginas -->
+  <router-outlet></router-outlet>
+</main>
+
+@if (showLayout()) {
+  <!-- BottomBar solo se mostrará en las páginas que no son de login -->
+  <app-bottom-bar></app-bottom-bar>
+}
