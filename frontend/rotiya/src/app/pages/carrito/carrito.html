@@ -10,7 +10,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
-    body { padding-bottom: 72px; } /* alto aprox de la bottom bar */
+    body { padding-bottom: 72px; }
     .qty-group .btn { width: 2.25rem; height: 2.25rem; line-height: 1; padding: 0; }
     .qty-input { width: 3rem; text-align: center; }
     .price-sm { font-size: .9rem; }
@@ -18,50 +18,37 @@
 </head>
 <body class="bg-light">
 
-
   <!-- Contenido principal -->
   <div class="container py-5">
     <h2 class="mb-4 text-center brand-text">Tu Carrito</h2>
 
     <!-- Lista de productos -->
     <div class="list-group mb-4" id="cart-list">
-      <!-- Item 1 -->
+      <!-- Iteramos sobre los items usando *ngFor -->
       <div class="list-group-item d-flex justify-content-between align-items-center cart-item"
-           data-price="20.00">
+           *ngFor="let item of cartItems">
         <div class="me-3">
-          <h6 class="mb-1">Pollo a la parrilla</h6>
+          <h6 class="mb-1">{{ item.name }}</h6>
           <small class="text-muted price-sm">
-            Precio unidad: $<span class="unit-price">20.00</span>
+            Precio unidad: $<span class="unit-price">{{ formatPrice(item.unitPrice) }}</span>
           </small>
-          <div class="text-muted price-sm">Subtotal: $<span class="line-total">20.00</span></div>
+          <div class="text-muted price-sm">Subtotal: $<span class="line-total">{{ formatPrice(getLineTotal(item)) }}</span></div>
         </div>
         <div class="d-flex align-items-center qty-group">
-          <button class="btn btn-outline-secondary btn-sm btn-dec" aria-label="Restar 1">
+          <button class="btn btn-outline-secondary btn-sm btn-dec" 
+                  (click)="decrementQuantity(item)"
+                  aria-label="Restar 1">
             <i class="bi bi-dash"></i>
           </button>
-          <input class="form-control form-control-sm mx-2 qty-input" type="text" value="1" inputmode="numeric" aria-label="Cantidad" readonly>
-          <button class="btn btn-outline-secondary btn-sm btn-inc" aria-label="Sumar 1">
-            <i class="bi bi-plus"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Item 2 -->
-      <div class="list-group-item d-flex justify-content-between align-items-center cart-item"
-           data-price="12.00">
-        <div class="me-3">
-          <h6 class="mb-1">Empanadas de carne</h6>
-          <small class="text-muted price-sm">
-            Precio unidad: $<span class="unit-price">12.00</span>
-          </small>
-          <div class="text-muted price-sm">Subtotal: $<span class="line-total">24.00</span></div>
-        </div>
-        <div class="d-flex align-items-center qty-group">
-          <button class="btn btn-outline-secondary btn-sm btn-dec" aria-label="Restar 1">
-            <i class="bi bi-dash"></i>
-          </button>
-          <input class="form-control form-control-sm mx-2 qty-input" type="text" value="2" inputmode="numeric" aria-label="Cantidad" readonly>
-          <button class="btn btn-outline-secondary btn-sm btn-inc" aria-label="Sumar 1">
+          <input class="form-control form-control-sm mx-2 qty-input" 
+                 type="text" 
+                 [value]="item.quantity" 
+                 inputmode="numeric" 
+                 aria-label="Cantidad" 
+                 readonly>
+          <button class="btn btn-outline-secondary btn-sm btn-inc" 
+                  (click)="incrementQuantity(item)"
+                  aria-label="Sumar 1">
             <i class="bi bi-plus"></i>
           </button>
         </div>
@@ -74,14 +61,13 @@
       <hr>
       <div class="d-flex justify-content-between">
         <span>Subtotal</span>
-        <span>$<span id="subtotal">44.00</span></span>
+        <span>$<span id="subtotal">{{ formatPrice(getSubtotal()) }}</span></span>
       </div>
       <hr>
       <div class="d-flex justify-content-between fw-bold">
         <span>Total</span>
-        <span>$<span id="total">44.00</span></span>
+        <span>$<span id="total">{{ formatPrice(getTotal()) }}</span></span>
       </div>
-      <!-- Botón actualizado: Ir a pagar => pago.html (sin pushup ni JS extra) -->
       <a href="pago.html" class="btn btn-success w-100 mt-3">Ir a pagar</a>
     </div>
   </div>
@@ -106,7 +92,8 @@
           <a class="nav-link py-2 position-relative active" href="carrito.html">
             <i class="bi bi-cart fs-5 d-block"></i>
             <small>Carrito</small>
-            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger" id="bottom-cart-count">2</span>
+            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger" 
+                  id="bottom-cart-count">{{ getTotalItems() }}</span>
           </a>
         </li>
         <li class="nav-item">
@@ -121,64 +108,5 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Lógica de cantidades y totales -->
-  <script>
-    (function () {
-      const fmt = (n) => (Number(n).toFixed(2));
-      const cartItems = Array.from(document.querySelectorAll('.cart-item'));
-      const subtotalEl = document.getElementById('subtotal');
-      const totalEl = document.getElementById('total');
-      const cartCountTop = document.getElementById('cart-count');
-      const cartCountBottom = document.getElementById('bottom-cart-count');
-
-      function recalc() {
-        let subtotal = 0;
-        let itemsCount = 0;
-
-        cartItems.forEach(item => {
-          const unit = parseFloat(item.dataset.price);
-          const qtyInput = item.querySelector('.qty-input');
-          const qty = Math.max(0, parseInt(qtyInput.value || '0', 10));
-          const line = unit * qty;
-          item.querySelector('.line-total').textContent = fmt(line);
-          subtotal += line;
-          itemsCount += qty;
-        });
-
-        subtotalEl.textContent = fmt(subtotal);
-        totalEl.textContent = fmt(subtotal); // si luego agregás envío/impuestos, cámbialo acá
-
-        // Actualizar badges de carrito
-        if (cartCountTop) cartCountTop.textContent = itemsCount;
-        if (cartCountBottom) cartCountBottom.textContent = itemsCount;
-      }
-
-      function bindItem(item) {
-        const dec = item.querySelector('.btn-dec');
-        const inc = item.querySelector('.btn-inc');
-        const qtyInput = item.querySelector('.qty-input');
-
-        dec.addEventListener('click', () => {
-          let v = parseInt(qtyInput.value, 10) || 0;
-          v = Math.max(0, v - 1);
-          qtyInput.value = v;
-          recalc();
-        });
-
-        inc.addEventListener('click', () => {
-          let v = parseInt(qtyInput.value, 10) || 0;
-          qtyInput.value = v + 1;
-          recalc();
-        });
-      }
-
-      cartItems.forEach(bindItem);
-      recalc(); // cálculo inicial
-    })();
-  </script>
-
-  <!-- (opcional) tu script global -->
-  <script src="js/script.js"></script>
 </body>
 </html>
