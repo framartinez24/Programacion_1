@@ -17,8 +17,13 @@ export class App {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      // LA ÚNICA LÍNEA QUE CAMBIAMOS: Añadimos la ruta de registro
-      if (event.urlAfterRedirects === '/login' || event.urlAfterRedirects === '/restore' || event.urlAfterRedirects === '/registro') {
+      // LA LÍNEA MODIFICADA: Añadimos '/admin' a la lista de páginas sin layout
+      if (
+        event.urlAfterRedirects === '/login' ||
+        event.urlAfterRedirects === '/restore' ||
+        event.urlAfterRedirects === '/registro' ||
+        event.urlAfterRedirects === '/admin' 
+      ) {
         this.showLayout.set(false);
       } else {
         this.showLayout.set(true);

@@ -1,541 +1,230 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RotiYa - Administración</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<div class="container-fluid">
+  <div class="row">
+    <!-- Menú lateral -->
+    <aside class="col-md-3 col-lg-2 bg-light p-3 border-end vh-100">
+      <h5 class="mb-3 brand-text">RotiYa Admin</h5>
+      <div class="list-group">
+        <button class="list-group-item list-group-item-action" (click)="changePage('stock')" [class.active]="currentPage === 'stock'">Stock</button>
+        <button class="list-group-item list-group-item-action" (click)="changePage('clientes')" [class.active]="currentPage === 'clientes'">Clientes</button>
+        <button class="list-group-item list-group-item-action" (click)="changePage('pedidos')" [class.active]="currentPage === 'pedidos'">Pedidos</button>
+        <button class="list-group-item list-group-item-action" (click)="changePage('empleados')" [class.active]="currentPage === 'empleados'">Empleados</button>
+      </div>
+    </aside>
 
-  <style>
-    body{padding-bottom:72px}
-    .table td,.table th{vertical-align:middle}
-    .w-qty{width:6.5rem}
-    .logo{height:32px}
-    .cursor-pointer{cursor:pointer}
-  </style>
-</head>
-<body>
+    <!-- Contenido principal -->
+    <main class="col-md-9 col-lg-10 p-4">
+      @switch (currentPage) {
 
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Menú lateral -->
-      <aside class="col-md-3 col-lg-2 bg-light p-3 border-end" style="min-height:100vh">
-        <h5 class="mb-3 brand-text">RotiYa Admin</h5>
-        <div class="list-group">
-          <button class="list-group-item list-group-item-action active" onclick="showAdminPage('stock')">Stock</button>
-          <button class="list-group-item list-group-item-action" onclick="showAdminPage('clientes')">Clientes</button>
-          <button class="list-group-item list-group-item-action" onclick="showAdminPage('pedidos')">Pedidos</button>
-          <button class="list-group-item list-group-item-action" onclick="showAdminPage('empleados')">Empleados</button>
-        </div>
-      </aside>
-
-      <!-- Contenido -->
-      <main class="col-md-9 col-lg-10 p-4">
-
-        <!-- STOCK -->
-        <section id="stock" class="admin-page">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h3 class="mb-0">Stock</h3>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProducto">
-              <i class="bi bi-plus-lg me-1"></i> Añadir producto
-            </button>
-          </div>
-
-          <div class="table-responsive">
-            <table class="table table-striped align-middle" id="tablaStock">
-              <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Categoría</th>
-                <th class="text-end">Precio ($)</th>
-                <th class="text-center">Cantidad</th>
-                <th class="text-end">Acciones</th>
-              </tr>
-              </thead>
-              <tbody><!-- filas dinámicas --></tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- CLIENTES -->
-        <section id="clientes" class="admin-page d-none">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h3 class="mb-0">Clientes</h3>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCliente">
-              <i class="bi bi-plus-lg me-1"></i> Añadir cliente
-            </button>
-          </div>
-
-          <div class="table-responsive">
-            <table class="table table-hover" id="tablaClientes">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Email</th>
-                  <th>Teléfono</th>
-                  <th class="text-end">Acciones</th>
-                </tr>
-              </thead>
-              <tbody><!-- filas dinámicas --></tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- PEDIDOS -->
-        <section id="pedidos" class="admin-page d-none">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h3 class="mb-0">Pedidos</h3>
-            <span class="text-muted small">Cambie el estado desde el selector</span>
-          </div>
-
-          <div class="table-responsive">
-            <table class="table table-striped" id="tablaPedidos">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Cliente</th>
-                  <th>Detalle</th>
-                  <th class="text-center">Total</th>
-                  <th class="text-end">Estado</th>
-                </tr>
-              </thead>
-              <tbody><!-- filas dinámicas --></tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- EMPLEADOS -->
-        <section id="empleados" class="admin-page d-none">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h3 class="mb-0">Empleados</h3>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEmpleado">
-              <i class="bi bi-plus-lg me-1"></i> Añadir empleado
-            </button>
-          </div>
-
-          <div class="table-responsive">
-            <table class="table table-hover" id="tablaEmpleados">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Rol</th>
-                  <th class="text-end">Acciones</th>
-                </tr>
-              </thead>
-              <tbody><!-- filas dinámicas --></tbody>
-            </table>
-          </div>
-        </section>
-
-      </main>
-    </div>
-  </div>
-
-  <!-- Navbar inferior fija -->
-  <nav class="navbar fixed-bottom bg-white border-top shadow-sm">
-    <div class="container px-0">
-      <ul class="nav nav-justified w-100 text-center">
-        <li class="nav-item">
-          <a class="nav-link py-2" href="menu.html">
-            <i class="bi bi-house-door fs-5 d-block"></i><small>Inicio</small>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link py-2 active" href="menu.html">
-            <i class="bi bi-list-ul fs-5 d-block"></i><small>Menú</small>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link py-2 position-relative" href="carrito.html">
-            <i class="bi bi-cart fs-5 d-block"></i><small>Carrito</small>
-            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger" id="cartBottomBadge">0</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link py-2" href="perfil.html">
-            <i class="bi bi-person fs-5 d-block"></i><small>Perfil</small>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-
-  <!-- MODALES -->
-
-  <!-- Modal Producto -->
-  <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <form class="modal-content" id="formProducto">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalProductoTitle">Añadir producto</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="prodIndex">
-          <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="prodNombre" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Categoría</label>
-            <select class="form-select" id="prodCategoria" required>
-              <option value="Entrada">Entrada</option>
-              <option value="Plato principal">Plato principal</option>
-              <option value="Postres">Postres</option>
-              <option value="Bebidas">Bebidas</option>
-            </select>
-          </div>
-          <div class="row g-3">
-            <div class="col-6">
-              <label class="form-label">Precio ($)</label>
-              <input type="number" class="form-control" id="prodPrecio" min="0" step="0.01" required>
+        <!-- SECCIÓN DE STOCK -->
+        @case ('stock') {
+          <section>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="mb-0">Stock</h3>
+              <!-- BOTÓN CONECTADO -->
+              <button class="btn btn-primary" (click)="openProductoModal()"><i class="bi bi-plus-lg me-1"></i> Añadir producto</button>
             </div>
-            <div class="col-6">
-              <label class="form-label">Cantidad</label>
-              <input type="number" class="form-control" id="prodCantidad" min="0" step="1" required>
+            <div class="table-responsive">
+              <table class="table table-striped align-middle">
+                <thead><tr><th>Producto</th><th>Categoría</th><th class="text-end">Precio ($)</th><th class="text-center">Cantidad</th><th class="text-end">Acciones</th></tr></thead>
+                <tbody>
+                  @for (prod of productos(); track prod.nombre; let i = $index) {
+                    <tr>
+                      <td>{{ prod.nombre }}</td>
+                      <td>{{ prod.categoria }}</td>
+                      <td class="text-end">$ {{ prod.precio.toFixed(2) }}</td>
+                      <td class="text-center">
+                        <div class="input-group input-group-sm justify-content-center" style="width: 6.5rem;">
+                          <button class="btn btn-outline-secondary btn-sm" (click)="onDecrementarCantidad(i)"><i class="bi bi-dash"></i></button>
+                          <input class="form-control form-control-sm text-center" [value]="prod.cantidad" readonly>
+                          <button class="btn btn-outline-secondary btn-sm" (click)="onIncrementarCantidad(i)"><i class="bi bi-plus"></i></button>
+                        </div>
+                      </td>
+                      <td class="text-end">
+                        <!-- BOTÓN DE EDITAR CONECTADO -->
+                        <button class="btn btn-outline-secondary btn-sm me-2" (click)="openProductoModal(i)"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-outline-danger btn-sm" (click)="onDeleteProducto(i)"><i class="bi bi-trash"></i></button>
+                      </td>
+                    </tr>
+                  } @empty { <tr><td colspan="5" class="text-center text-muted">No hay productos en el stock.</td></tr> }
+                </tbody>
+              </table>
             </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnGuardarProducto">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
+          </section>
+        }
 
-  <!-- Modal Cliente -->
-  <div class="modal fade" id="modalCliente" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <form class="modal-content" id="formCliente">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalClienteTitle">Añadir cliente</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="cliIndex">
-          <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="cliNombre" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" id="cliEmail" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Teléfono</label>
-            <input type="text" class="form-control" id="cliTelefono" required>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modal Empleado -->
-  <div class="modal fade" id="modalEmpleado" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <form class="modal-content" id="formEmpleado">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalEmpleadoTitle">Añadir empleado</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="empIndex">
-          <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="empNombre" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Rol</label>
-            <input type="text" class="form-control" id="empRol" required>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // ------ Estado inicial (con localStorage) ------
-    const LS_KEY = 'rotiya_admin_state_v1';
-    const defaultState = {
-      cartCount: 0,
-      productos: [
-        { nombre:'Empanadas de carne', categoria:'Entrada', precio:12.99, cantidad:99 },
-        { nombre:'Nachos', categoria:'Entrada', precio:9.99, cantidad:25 },
-        { nombre:'Pollo a la parrilla', categoria:'Plato principal', precio:15.00, cantidad:10 }
-      ],
-      clientes: [
-        { nombre:'Laura', email:'laura@mail.com', telefono:'+54 261 000 0001' },
-        { nombre:'Roberto', email:'roberto@mail.com', telefono:'+54 261 000 0002' },
-        { nombre:'Lautaro', email:'lautaro@mail.com', telefono:'+54 261 000 0003' }
-      ],
-      empleados: [
-        { nombre:'Laura', rol:'Cocina' },
-        { nombre:'Roberto', rol:'Delivery' },
-        { nombre:'Lautaro', rol:'Atención' }
-      ],
-      pedidos: [
-        { fecha:'2025-08-09 15:00', cliente:'Laura', detalle:'Pollo a la parrilla, Empanadas de carne', total:27.99, estado:'Entregado' },
-        { fecha:'2025-08-09 12:00', cliente:'Roberto', detalle:'Nachos con salsa', total:9.99, estado:'Pendiente' }
-      ]
-    };
-    let state = loadState();
-
-    function loadState(){
-      const raw = localStorage.getItem(LS_KEY);
-      if(!raw) return structuredClone(defaultState);
-      try { return JSON.parse(raw); } catch { return structuredClone(defaultState); }
-    }
-    function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-
-    // ------ Utilidades ------
-    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-    const $  = (sel, root=document) => root.querySelector(sel);
-    const fmt = n => Number(n).toFixed(2);
-
-    // ------ Navegación entre páginas admin ------
-    function showAdminPage(id){
-      $$('.list-group .list-group-item').forEach(b=>b.classList.remove('active'));
-      const btn = [...$$('.list-group .list-group-item')].find(b=>b.textContent.trim().toLowerCase()===id.replace('-',' '));
-      if(btn) btn.classList.add('active');
-
-      $$('.admin-page').forEach(s=>s.classList.add('d-none'));
-      const sec = document.getElementById(id);
-      if(sec) sec.classList.remove('d-none');
-    }
-
-    // ------ Render: STOCK ------
-    function renderStock(){
-      const tbody = $('#tablaStock tbody');
-      tbody.innerHTML = '';
-      state.productos.forEach((p, i)=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${p.nombre}</td>
-          <td>${p.categoria}</td>
-          <td class="text-end">$ ${fmt(p.precio)}</td>
-          <td class="text-center">
-            <div class="input-group input-group-sm justify-content-center w-qty mx-auto">
-              <button class="btn btn-outline-secondary btn-sm" data-action="dec" data-index="${i}"><i class="bi bi-dash"></i></button>
-              <input class="form-control form-control-sm text-center" value="${p.cantidad}" readonly>
-              <button class="btn btn-outline-secondary btn-sm" data-action="inc" data-index="${i}"><i class="bi bi-plus"></i></button>
+        <!-- SECCIÓN DE CLIENTES -->
+        @case ('clientes') {
+          <section>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="mb-0">Clientes</h3>
+              <!-- BOTÓN CONECTADO -->
+              <button class="btn btn-primary" (click)="openClienteModal()"><i class="bi bi-plus-lg me-1"></i> Añadir cliente</button>
             </div>
-          </td>
-          <td class="text-end">
-            <button class="btn btn-outline-secondary btn-sm me-2" data-action="edit" data-index="${i}">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button class="btn btn-outline-danger btn-sm" data-action="del" data-index="${i}">
-              <i class="bi bi-trash"></i>
-            </button>
-          </td>`;
-        tbody.appendChild(tr);
-      });
-    }
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead><tr><th>Nombre</th><th>Email</th><th>Teléfono</th><th class="text-end">Acciones</th></tr></thead>
+                <tbody>
+                  @for (cliente of clientes(); track cliente.email; let i = $index) {
+                    <tr>
+                      <td>{{ cliente.nombre }}</td>
+                      <td>{{ cliente.email }}</td>
+                      <td>{{ cliente.telefono }}</td>
+                      <td class="text-end">
+                        <!-- BOTÓN DE EDITAR CONECTADO -->
+                        <button class="btn btn-outline-secondary btn-sm me-2" (click)="openClienteModal(i)"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-outline-danger btn-sm" (click)="onDeleteCliente(i)"><i class="bi bi-trash"></i></button>
+                      </td>
+                    </tr>
+                  } @empty { <tr><td colspan="4" class="text-center text-muted">No hay clientes registrados.</td></tr> }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        }
 
-    // ------ Render: CLIENTES ------
-    function renderClientes(){
-      const tbody = $('#tablaClientes tbody');
-      tbody.innerHTML = '';
-      state.clientes.forEach((c,i)=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${c.nombre}</td>
-          <td>${c.email}</td>
-          <td>${c.telefono}</td>
-          <td class="text-end">
-            <button class="btn btn-outline-secondary btn-sm me-2" data-action="edit-cli" data-index="${i}">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button class="btn btn-outline-danger btn-sm" data-action="del-cli" data-index="${i}">
-              <i class="bi bi-trash"></i>
-            </button>
-          </td>`;
-        tbody.appendChild(tr);
-      });
-    }
+        <!-- SECCIÓN DE PEDIDOS -->
+        @case ('pedidos') {
+          <section>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="mb-0">Pedidos</h3>
+              <span class="text-muted small">Cambie el estado desde el selector</span>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-striped align-middle">
+                <thead><tr><th>Fecha</th><th>Cliente</th><th>Detalle</th><th class="text-center">Total</th><th class="text-end">Estado</th></tr></thead>
+                <tbody>
+                  @for (pedido of pedidos(); track pedido.fecha; let i = $index) {
+                    <tr>
+                      <td>{{ pedido.fecha }}</td>
+                      <td>{{ pedido.cliente }}</td>
+                      <td>{{ pedido.detalle }}</td>
+                      <td class="text-center">$ {{ pedido.total.toFixed(2) }}</td>
+                      <td class="text-end">
+                        <select class="form-select form-select-sm w-auto d-inline-block" (change)="onEstadoPedidoChange($event, i)">
+                          @for (estado of estadosPedido; track estado) {
+                            <option [value]="estado" [selected]="estado === pedido.estado">{{ estado }}</option>
+                          }
+                        </select>
+                      </td>
+                    </tr>
+                  } @empty { <tr><td colspan="5" class="text-center text-muted">No hay pedidos registrados.</td></tr> }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        }
 
-    // ------ Render: EMPLEADOS ------
-    function renderEmpleados(){
-      const tbody = $('#tablaEmpleados tbody');
-      tbody.innerHTML = '';
-      state.empleados.forEach((e,i)=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${e.nombre}</td>
-          <td>${e.rol}</td>
-          <td class="text-end">
-            <button class="btn btn-outline-secondary btn-sm me-2" data-action="edit-emp" data-index="${i}">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button class="btn btn-outline-danger btn-sm" data-action="del-emp" data-index="${i}">
-              <i class="bi bi-trash"></i>
-            </button>
-          </td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // ------ Render: PEDIDOS ------
-    const ESTADOS = ['Pendiente','En preparación','En reparto','Entregado','Cancelado'];
-
-    function renderPedidos(){
-      const tbody = $('#tablaPedidos tbody');
-      tbody.innerHTML = '';
-      state.pedidos.forEach((p,i)=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${p.fecha}</td>
-          <td>${p.cliente}</td>
-          <td>${p.detalle}</td>
-          <td class="text-center">$ ${fmt(p.total)}</td>
-          <td class="text-end">
-            <select class="form-select form-select-sm w-auto d-inline-block" data-action="estado" data-index="${i}">
-              ${ESTADOS.map(e=>`<option value="${e}" ${e===p.estado?'selected':''}>${e}</option>`).join('')}
-            </select>
-          </td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // ------ Eventos: STOCK ------
-    $('#tablaStock').addEventListener('click', (e)=>{
-      const btn = e.target.closest('button');
-      if(!btn) return;
-      const idx = +btn.dataset.index;
-      const action = btn.dataset.action;
-      if(Number.isNaN(idx)) return;
-
-      if(action==='inc'){ state.productos[idx].cantidad++; }
-      if(action==='dec'){ state.productos[idx].cantidad = Math.max(0, state.productos[idx].cantidad-1); }
-      if(action==='del'){
-        if(confirm('¿Eliminar producto?')) state.productos.splice(idx,1);
+        <!-- SECCIÓN DE EMPLEADOS -->
+        @case ('empleados') {
+          <section>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="mb-0">Empleados</h3>
+              <!-- BOTÓN CONECTADO -->
+              <button class="btn btn-primary" (click)="openEmpleadoModal()"><i class="bi bi-plus-lg me-1"></i> Añadir empleado</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead><tr><th>Nombre</th><th>Rol</th><th class="text-end">Acciones</th></tr></thead>
+                <tbody>
+                  @for (empleado of empleados(); track empleado.nombre; let i = $index) {
+                    <tr>
+                      <td>{{ empleado.nombre }}</td>
+                      <td>{{ empleado.rol }}</td>
+                      <td class="text-end">
+                        <!-- BOTÓN DE EDITAR CONECTADO -->
+                        <button class="btn btn-outline-secondary btn-sm me-2" (click)="openEmpleadoModal(i)"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-outline-danger btn-sm" (click)="onDeleteEmpleado(i)"><i class="bi bi-trash"></i></button>
+                      </td>
+                    </tr>
+                  } @empty { <tr><td colspan="3" class="text-center text-muted">No hay empleados registrados.</td></tr> }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        }
       }
-      if(action==='edit'){
-        // abrir modal con datos
-        $('#modalProductoTitle').textContent = 'Editar producto';
-        $('#prodIndex').value = idx;
-        $('#prodNombre').value = state.productos[idx].nombre;
-        $('#prodCategoria').value = state.productos[idx].categoria;
-        $('#prodPrecio').value = state.productos[idx].precio;
-        $('#prodCantidad').value = state.productos[idx].cantidad;
-        new bootstrap.Modal('#modalProducto').show();
-        return;
-      }
-      saveState(); renderStock();
-    });
+    </main>
+  </div>
+</div>
 
-    // Guardar (crear/editar) producto
-    $('#formProducto').addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const i = $('#prodIndex').value;
-      const data = {
-        nombre: $('#prodNombre').value.trim(),
-        categoria: $('#prodCategoria').value,
-        precio: parseFloat($('#prodPrecio').value || 0),
-        cantidad: parseInt($('#prodCantidad').value || 0, 10)
-      };
-      if(i===''){ state.productos.push(data); }
-      else { state.productos[+i] = data; }
-      saveState(); renderStock();
-      e.target.reset(); $('#prodIndex').value='';
-      bootstrap.Modal.getInstance('#modalProducto').hide();
-    });
 
-    // ------ Eventos: CLIENTES ------
-    $('#tablaClientes').addEventListener('click', (e)=>{
-      const btn = e.target.closest('button'); if(!btn) return;
-      const idx = +btn.dataset.index;
-      const action = btn.dataset.action;
+<!-- =============================================================== -->
+<!-- MODALES -->
+<!-- =============================================================== -->
 
-      if(action==='del-cli'){
-        if(confirm('¿Eliminar cliente?')){ state.clientes.splice(idx,1); saveState(); renderClientes(); }
-        return;
-      }
-      if(action==='edit-cli'){
-        $('#modalClienteTitle').textContent='Editar cliente';
-        $('#cliIndex').value = idx;
-        $('#cliNombre').value = state.clientes[idx].nombre;
-        $('#cliEmail').value = state.clientes[idx].email;
-        $('#cliTelefono').value = state.clientes[idx].telefono;
-        new bootstrap.Modal('#modalCliente').show();
-      }
-    });
+<!-- Modal Producto (Ya lo tenías, sin cambios) -->
+<div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" #productForm="ngForm" (ngSubmit)="saveProducto(productForm)">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editingProductoIndex === null ? 'Añadir' : 'Editar' }} producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" name="prodNombre" [(ngModel)]="editingProducto.nombre" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Categoría</label>
+          <select class="form-select" name="prodCategoria" [(ngModel)]="editingProducto.categoria" required>
+            <option value="" disabled>Seleccione una categoría</option>
+            <option value="Entrada">Entrada</option>
+            <option value="Plato principal">Plato principal</option>
+            <option value="Postres">Postres</option>
+            <option value="Bebidas">Bebidas</option>
+          </select>
+        </div>
+        <div class="row g-3">
+          <div class="col-6"><label class="form-label">Precio ($)</label><input type="number" class="form-control" name="prodPrecio" [(ngModel)]="editingProducto.precio" min="0" step="0.01" required></div>
+          <div class="col-6"><label class="form-label">Cantidad</label><input type="number" class="form-control" name="prodCantidad" [(ngModel)]="editingProducto.cantidad" min="0" step="1" required></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-    $('#formCliente').addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const i = $('#cliIndex').value;
-      const c = {
-        nombre: $('#cliNombre').value.trim(),
-        email: $('#cliEmail').value.trim(),
-        telefono: $('#cliTelefono').value.trim()
-      };
-      if(i===''){ state.clientes.push(c); }
-      else { state.clientes[+i] = c; }
-      saveState(); renderClientes();
-      e.target.reset(); $('#cliIndex').value='';
-      bootstrap.Modal.getInstance('#modalCliente').hide();
-    });
+<!-- MODAL CLIENTE (NUEVO) -->
+<div class="modal fade" id="modalCliente" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" #clienteForm="ngForm" (ngSubmit)="saveCliente(clienteForm)">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editingClienteIndex === null ? 'Añadir' : 'Editar' }} cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">Nombre</label><input type="text" class="form-control" name="cliNombre" [(ngModel)]="editingCliente.nombre" required></div>
+        <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" name="cliEmail" [(ngModel)]="editingCliente.email" required></div>
+        <div class="mb-3"><label class="form-label">Teléfono</label><input type="text" class="form-control" name="cliTelefono" [(ngModel)]="editingCliente.telefono" required></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="clienteForm.invalid">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-    // ------ Eventos: EMPLEADOS ------
-    $('#tablaEmpleados').addEventListener('click', (e)=>{
-      const btn = e.target.closest('button'); if(!btn) return;
-      const idx = +btn.dataset.index;
-      const action = btn.dataset.action;
-
-      if(action==='del-emp'){
-        if(confirm('¿Eliminar empleado?')){ state.empleados.splice(idx,1); saveState(); renderEmpleados(); }
-        return;
-      }
-      if(action==='edit-emp'){
-        $('#modalEmpleadoTitle').textContent='Editar empleado';
-        $('#empIndex').value = idx;
-        $('#empNombre').value = state.empleados[idx].nombre;
-        $('#empRol').value = state.empleados[idx].rol;
-        new bootstrap.Modal('#modalEmpleado').show();
-      }
-    });
-
-    $('#formEmpleado').addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const i = $('#empIndex').value;
-      const emp = { nombre: $('#empNombre').value.trim(), rol: $('#empRol').value.trim() };
-      if(i===''){ state.empleados.push(emp); }
-      else { state.empleados[+i] = emp; }
-      saveState(); renderEmpleados();
-      e.target.reset(); $('#empIndex').value='';
-      bootstrap.Modal.getInstance('#modalEmpleado').hide();
-    });
-
-    // ------ Eventos: PEDIDOS ------
-    $('#tablaPedidos').addEventListener('change', (e)=>{
-      const sel = e.target.closest('select'); if(!sel) return;
-      const idx = +sel.dataset.index;
-      state.pedidos[idx].estado = sel.value;
-      saveState(); // solo persistimos
-    });
-
-    // ------ Init ------
-    function renderAll(){
-      renderStock(); renderClientes(); renderEmpleados(); renderPedidos();
-      // badges carrito (si querés, conectalo a tu flujo real)
-      $('#cartTopBadge').textContent = state.cartCount;
-      $('#cartBottomBadge').textContent = state.cartCount;
-    }
-    renderAll();
-
-    // mantener activo "Stock" al cargar
-    showAdminPage('stock');
-  </script>
-</body>
-</html>
+<!-- MODAL EMPLEADO (NUEVO) -->
+<div class="modal fade" id="modalEmpleado" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" #empleadoForm="ngForm" (ngSubmit)="saveEmpleado(empleadoForm)">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editingEmpleadoIndex === null ? 'Añadir' : 'Editar' }} empleado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">Nombre</label><input type="text" class="form-control" name="empNombre" [(ngModel)]="editingEmpleado.nombre" required></div>
+        <div class="mb-3"><label class="form-label">Rol</label><input type="text" class="form-control" name="empRol" [(ngModel)]="editingEmpleado.rol" required></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="empleadoForm.invalid">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
