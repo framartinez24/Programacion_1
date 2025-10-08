@@ -1,24 +1,15 @@
 <div class="container my-3">
-  
-  <!-- BARRA DE NAVEGACIÓN DE CATEGORÍAS (DIRECTAMENTE AQUÍ) -->
+
+  <!-- BARRA DE NAVEGACIÓN SIN RESEÑAS -->
   <nav class="category-nav">
-    <button class="category-item" (click)="changePage('principales')" [class.active]="currentPage === 'principales'">
-      Platos Principales
-    </button>
-    <button class="category-item" (click)="changePage('entradas')" [class.active]="currentPage === 'entradas'">
-      Entradas
-    </button>
-    <button class="category-item" (click)="changePage('postres')" [class.active]="currentPage === 'postres'">
-      Postres
-    </button>
-    <button class="category-item" (click)="changePage('bebidas')" [class.active]="currentPage === 'bebidas'">
-      Bebidas
-    </button>
+    <button class="category-item" (click)="changePage('principales')" [class.active]="currentPage() === 'principales'">Platos Principales</button>
+    <button class="category-item" (click)="changePage('entradas')" [class.active]="currentPage() === 'entradas'">Entradas</button>
+    <button class="category-item" (click)="changePage('postres')" [class.active]="currentPage() === 'postres'">Postres</button>
+    <button class="category-item" (click)="changePage('bebidas')" [class.active]="currentPage() === 'bebidas'">Bebidas</button>
   </nav>
 
-  <!-- LISTAS DE PRODUCTOS (CÓDIGO COMPLETO PARA CADA SECCIÓN) -->
   <div class="mt-4">
-    @switch (currentPage) {
+    @switch (currentPage()) {
 
       @case ('principales') {
         <h2 class="mb-4 text-center brand-text">Platos Principales</h2>
@@ -37,7 +28,7 @@
                 </div>
               </div>
             </div>
-          } @empty { <p class="text-center text-muted col-12">No hay platos principales disponibles.</p> }
+          }
         </div>
       }
 
@@ -58,10 +49,10 @@
                 </div>
               </div>
             </div>
-          } @empty { <p class="text-center text-muted col-12">No hay entradas disponibles.</p> }
+          }
         </div>
       }
-      
+
       @case ('postres') {
         <h2 class="mb-4 text-center brand-text">Postres</h2>
         <div class="row g-4">
@@ -79,7 +70,7 @@
                 </div>
               </div>
             </div>
-          } @empty { <p class="text-center text-muted col-12">No hay postres disponibles.</p> }
+          }
         </div>
       }
 
@@ -100,7 +91,66 @@
                 </div>
               </div>
             </div>
-          } @empty { <p class="text-center text-muted col-12">No hay bebidas disponibles.</p> }
+          }
+        </div>
+      }
+
+      @case ('resenas') {
+        <div>
+          <h2 class="mb-4 text-center brand-text">Reseñas de Clientes</h2>
+
+          <div class="card mb-5 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Deja tu opinión</h5>
+              <form #resenaForm="ngForm" (ngSubmit)="submitResena(resenaForm)">
+
+                <div class="mb-3">
+                  <label for="resenaProducto" class="form-label">¿Sobre qué producto quieres opinar?</label>
+                  <select id="resenaProducto" name="resenaProducto" class="form-select" [(ngModel)]="newResena.productoNombre" required>
+                    <option value="" disabled>Selecciona un producto...</option>
+                    @for (producto of todosLosProductos(); track producto.nombre) {
+                      <option [value]="producto.nombre">{{ producto.nombre }}</option>
+                    }
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="resenaNombre" class="form-label">Tu nombre</label>
+                  <input type="text" id="resenaNombre" name="resenaNombre" class="form-control" [(ngModel)]="newResena.nombre" required>
+                </div>
+                <div class="mb-3">
+                  <label for="resenaComentario" class="form-label">Comentario</label>
+                  <textarea id="resenaComentario" name="resenaComentario" class="form-control" [(ngModel)]="newResena.comentario" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="resenaCalificacion" class="form-label">Calificación: {{ newResena.calificacion }} / 5</label>
+                  <input type="range" id="resenaCalificacion" name="resenaCalificacion" class="form-range" min="1" max="5" step="1" [(ngModel)]="newResena.calificacion">
+                </div>
+                <button type="submit" class="btn btn-primary" [disabled]="resenaForm.invalid">Enviar Reseña</button>
+              </form>
+            </div>
+          </div>
+
+          @for (resena of resenas(); track resena.fecha + resena.nombre) {
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-subtitle mb-1 text-muted">{{ resena.nombre }}</h6>
+                    <p class="card-text fw-bold mb-2">Opinó sobre: {{ resena.productoNombre }}</p>
+                  </div>
+                  <div class="text-warning">
+                    @for (star of [].constructor(resena.calificacion); track $index) { <i class="bi bi-star-fill"></i> }
+                    @for (star of [].constructor(5 - resena.calificacion); track $index) { <i class="bi bi-star"></i> }
+                  </div>
+                </div>
+                <p class="card-text fst-italic">"{{ resena.comentario }}"</p>
+                <small class="text-muted">{{ resena.fecha }}</small>
+              </div>
+            </div>
+          } @empty {
+            <p class="text-center text-muted">Aún no hay reseñas. ¡Sé el primero en dejar una!</p>
+          }
         </div>
       }
     }

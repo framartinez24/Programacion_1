@@ -1,40 +1,28 @@
-<!-- Navbar inferior fija -->
 <nav class="navbar fixed-bottom bg-white border-top shadow-sm">
   <div class="container px-0">
     <ul class="nav nav-justified w-100 text-center">
-      
-      <!-- Botón 1: Menú (antes Inicio) -->
-      <!-- Usa routerLink para una navegación simple a la página /menu -->
       <li class="nav-item">
-        <a class="nav-link py-2" routerLink="/menu" routerLinkActive="active">
+        <a class="nav-link py-2" routerLink="/menu" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
           <i class="bi bi-list-ul fs-5 d-block"></i><small>Menú</small>
         </a>
       </li>
-
-      <!-- Botón 2: Reseñas (antes Menú) -->
-      <!-- Usa (click) para llamar a nuestra función especial -->
       <li class="nav-item">
-        <a class="nav-link py-2" (click)="goToPage('resenas')" style="cursor: pointer;">
+        <!-- ESTE BOTÓN AHORA LLAMA A LA FUNCIÓN ESPECIAL -->
+        <a class="nav-link py-2" (click)="goToResenas()" style="cursor: pointer;">
           <i class="bi bi-star fs-5 d-block"></i><small>Reseñas</small>
         </a>
       </li>
-
-      <!-- Botón 3: Carrito (sin cambios) -->
       <li class="nav-item">
         <a class="nav-link py-2 position-relative" routerLink="/carrito" routerLinkActive="active">
           <i class="bi bi-cart fs-5 d-block"></i><small>Carrito</small>
-          <!-- Este badge se puede conectar a un servicio de carrito más adelante -->
           <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger">0</span>
         </a>
       </li>
-
-      <!-- Botón 4: Perfil (sin cambios) -->
       <li class="nav-item">
         <a class="nav-link py-2" routerLink="/perfil" routerLinkActive="active">
           <i class="bi bi-person fs-5 d-block"></i><small>Perfil</small>
         </a>
       </li>
-
     </ul>
   </div>
 </nav>
