@@ -1,14 +1,14 @@
 import { Component, inject, AfterViewInit, PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
+import { Router } from '@angular/router'; // <-- Importar el Router
 import { AdminDataService, Producto, Cliente, Empleado } from './admin-data';
 
 declare var bootstrap: any;
-
 type AdminPage = 'stock' | 'clientes' | 'pedidos' | 'empleados';
 
 @Component({
-  selector: 'app-admin',
+  selector: 'app-panel-admin',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './admin.html',
@@ -16,6 +16,7 @@ type AdminPage = 'stock' | 'clientes' | 'pedidos' | 'empleados';
 })
 export class Admin implements AfterViewInit {
   private dataService = inject(AdminDataService);
+  private router = inject(Router); // <-- Inyectar el Router
   private isBrowser: boolean;
 
   productos = this.dataService.productos;
@@ -49,11 +50,15 @@ export class Admin implements AfterViewInit {
     }
   }
 
+  // --- Nueva función ---
+  logout(): void {
+    this.router.navigate(['/login']);
+  }
+
   // --- Funciones de guardado CORREGIDAS ---
   saveProducto(form: NgForm) {
     if (form.invalid) return;
-    // LA CORRECCIÓN CLAVE: Creamos una copia con { ... }
-    const productoData = { ...this.editingProducto } as Producto; 
+    const productoData = { ...this.editingProducto } as Producto;
     if (this.editingProductoIndex !== null) {
       this.dataService.updateProducto(this.editingProductoIndex, productoData);
     } else {
@@ -65,7 +70,7 @@ export class Admin implements AfterViewInit {
   
   saveCliente(form: NgForm) {
     if (form.invalid) return;
-    const clienteData = { ...this.editingCliente } as Cliente; // Creamos una copia
+    const clienteData = { ...this.editingCliente } as Cliente;
     if (this.editingClienteIndex !== null) {
       this.dataService.updateCliente(this.editingClienteIndex, clienteData);
     } else {
@@ -77,7 +82,7 @@ export class Admin implements AfterViewInit {
   
   saveEmpleado(form: NgForm) {
     if (form.invalid) return;
-    const empleadoData = { ...this.editingEmpleado } as Empleado; // Creamos una copia
+    const empleadoData = { ...this.editingEmpleado } as Empleado;
     if (this.editingEmpleadoIndex !== null) {
       this.dataService.updateEmpleado(this.editingEmpleadoIndex, empleadoData);
     } else {
@@ -87,13 +92,13 @@ export class Admin implements AfterViewInit {
     form.reset();
   }
 
-  // --- El resto de funciones no cambian ---
+  // --- Funciones de abrir modales ---
   openProductoModal(index?: number) {
     if (index !== undefined) {
       this.editingProducto = { ...this.productos()[index] };
       this.editingProductoIndex = index;
     } else {
-      this.editingProducto = { categoria: 'Entrada' }; // Valor por defecto
+      this.editingProducto = { categoria: 'Entrada' };
       this.editingProductoIndex = null;
     }
     this.productoModal.show();
@@ -118,6 +123,8 @@ export class Admin implements AfterViewInit {
     }
     this.empleadoModal.show();
   }
+
+  // --- Resto de funciones ---
   changePage(page: AdminPage): void { this.currentPage = page; }
   onDeleteProducto(index: number): void { if (confirm('¿Eliminar producto?')) this.dataService.deleteProducto(index); }
   onIncrementarCantidad = (index: number) => this.dataService.incrementarCantidad(index);

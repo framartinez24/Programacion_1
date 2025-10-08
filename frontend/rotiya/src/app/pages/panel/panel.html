@@ -1,0 +1,35 @@
+@switch (currentView) {
+
+  @case ('empleado') {
+    <!-- Mostramos el panel de empleado y escuchamos su evento 'requestAdminAccess' -->
+    <app-panel-empleado (requestAdminAccess)="showAdminPrompt()" />
+  }
+
+  @case ('admin') {
+    <!-- Si la contraseña fue correcta, mostramos el panel de admin -->
+    <app-panel-admin />
+  }
+
+  @case ('admin-prompt') {
+    <!-- Esta es la nueva vista: el prompt de contraseña -->
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+      <div class="card p-4" style="width: 100%; max-width: 400px;">
+        <h4 class="mb-3">Acceso de Administrador</h4>
+        <p class="text-muted">Por favor, ingrese la contraseña de administrador para continuar.</p>
+        <form (ngSubmit)="onAdminPasswordSubmit()">
+          <div class="mb-3">
+            <label for="admin-password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="admin-password" [(ngModel)]="adminPasswordInput" name="adminPassword" required>
+          </div>
+          @if (authError) {
+            <div class="alert alert-danger">{{ authError }}</div>
+          }
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary" (click)="cancelAdminAccess()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+}

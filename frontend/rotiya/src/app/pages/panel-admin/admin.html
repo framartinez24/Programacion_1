@@ -1,13 +1,25 @@
 <div class="container-fluid">
   <div class="row">
     <!-- Menú lateral -->
-    <aside class="col-md-3 col-lg-2 bg-light p-3 border-end vh-100">
-      <h5 class="mb-3 brand-text">RotiYa Admin</h5>
-      <div class="list-group">
-        <button class="list-group-item list-group-item-action" (click)="changePage('stock')" [class.active]="currentPage === 'stock'">Stock</button>
-        <button class="list-group-item list-group-item-action" (click)="changePage('clientes')" [class.active]="currentPage === 'clientes'">Clientes</button>
-        <button class="list-group-item list-group-item-action" (click)="changePage('pedidos')" [class.active]="currentPage === 'pedidos'">Pedidos</button>
-        <button class="list-group-item list-group-item-action" (click)="changePage('empleados')" [class.active]="currentPage === 'empleados'">Empleados</button>
+    <aside class="col-md-3 col-lg-2 bg-light p-3 border-end vh-100 d-flex flex-column">
+      <!-- Contenido del menú que ya tenías -->
+      <div>
+        <h5 class="mb-3 brand-text">RotiYa Admin</h5>
+        <div class="list-group">
+          <button class="list-group-item list-group-item-action" (click)="changePage('stock')" [class.active]="currentPage === 'stock'">Stock</button>
+          <button class="list-group-item list-group-item-action" (click)="changePage('clientes')" [class.active]="currentPage === 'clientes'">Clientes</button>
+          <button class="list-group-item list-group-item-action" (click)="changePage('pedidos')" [class.active]="currentPage === 'pedidos'">Pedidos</button>
+          <button class="list-group-item list-group-item-action" (click)="changePage('empleados')" [class.active]="currentPage === 'empleados'">Empleados</button>
+        </div>
+      </div>
+      <!-- NUEVA SECCIÓN PARA EL BOTÓN DE SALIR (al final) -->
+      <div class="mt-auto">
+        <hr>
+        <div class="list-group">
+          <button class="list-group-item list-group-item-action text-danger" (click)="logout()">
+            <i class="bi bi-box-arrow-left me-2"></i>Salir
+          </button>
+        </div>
       </div>
     </aside>
 
@@ -20,7 +32,6 @@
           <section>
             <div class="d-flex align-items-center justify-content-between mb-3">
               <h3 class="mb-0">Stock</h3>
-              <!-- BOTÓN CONECTADO -->
               <button class="btn btn-primary" (click)="openProductoModal()"><i class="bi bi-plus-lg me-1"></i> Añadir producto</button>
             </div>
             <div class="table-responsive">
@@ -40,7 +51,6 @@
                         </div>
                       </td>
                       <td class="text-end">
-                        <!-- BOTÓN DE EDITAR CONECTADO -->
                         <button class="btn btn-outline-secondary btn-sm me-2" (click)="openProductoModal(i)"><i class="bi bi-pencil-square"></i></button>
                         <button class="btn btn-outline-danger btn-sm" (click)="onDeleteProducto(i)"><i class="bi bi-trash"></i></button>
                       </td>
@@ -57,7 +67,6 @@
           <section>
             <div class="d-flex align-items-center justify-content-between mb-3">
               <h3 class="mb-0">Clientes</h3>
-              <!-- BOTÓN CONECTADO -->
               <button class="btn btn-primary" (click)="openClienteModal()"><i class="bi bi-plus-lg me-1"></i> Añadir cliente</button>
             </div>
             <div class="table-responsive">
@@ -70,7 +79,6 @@
                       <td>{{ cliente.email }}</td>
                       <td>{{ cliente.telefono }}</td>
                       <td class="text-end">
-                        <!-- BOTÓN DE EDITAR CONECTADO -->
                         <button class="btn btn-outline-secondary btn-sm me-2" (click)="openClienteModal(i)"><i class="bi bi-pencil-square"></i></button>
                         <button class="btn btn-outline-danger btn-sm" (click)="onDeleteCliente(i)"><i class="bi bi-trash"></i></button>
                       </td>
@@ -119,7 +127,6 @@
           <section>
             <div class="d-flex align-items-center justify-content-between mb-3">
               <h3 class="mb-0">Empleados</h3>
-              <!-- BOTÓN CONECTADO -->
               <button class="btn btn-primary" (click)="openEmpleadoModal()"><i class="bi bi-plus-lg me-1"></i> Añadir empleado</button>
             </div>
             <div class="table-responsive">
@@ -131,7 +138,6 @@
                       <td>{{ empleado.nombre }}</td>
                       <td>{{ empleado.rol }}</td>
                       <td class="text-end">
-                        <!-- BOTÓN DE EDITAR CONECTADO -->
                         <button class="btn btn-outline-secondary btn-sm me-2" (click)="openEmpleadoModal(i)"><i class="bi bi-pencil-square"></i></button>
                         <button class="btn btn-outline-danger btn-sm" (click)="onDeleteEmpleado(i)"><i class="bi bi-trash"></i></button>
                       </td>
@@ -147,12 +153,11 @@
   </div>
 </div>
 
-
 <!-- =============================================================== -->
 <!-- MODALES -->
 <!-- =============================================================== -->
 
-<!-- Modal Producto (Ya lo tenías, sin cambios) -->
+<!-- Modal Producto -->
 <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <form class="modal-content" #productForm="ngForm" (ngSubmit)="saveProducto(productForm)">
@@ -188,7 +193,7 @@
   </div>
 </div>
 
-<!-- MODAL CLIENTE (NUEVO) -->
+<!-- Modal Cliente -->
 <div class="modal fade" id="modalCliente" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <form class="modal-content" #clienteForm="ngForm" (ngSubmit)="saveCliente(clienteForm)">
@@ -209,7 +214,7 @@
   </div>
 </div>
 
-<!-- MODAL EMPLEADO (NUEVO) -->
+<!-- Modal Empleado -->
 <div class="modal fade" id="modalEmpleado" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <form class="modal-content" #empleadoForm="ngForm" (ngSubmit)="saveEmpleado(empleadoForm)">

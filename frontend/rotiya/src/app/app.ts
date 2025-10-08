@@ -17,12 +17,12 @@ export class App {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      // LA LÍNEA MODIFICADA: Añadimos '/admin' a la lista de páginas sin layout
+      // LA LÍNEA MODIFICADA: Añadimos '/panel' a la lista de páginas sin layout
       if (
         event.urlAfterRedirects === '/login' ||
         event.urlAfterRedirects === '/restore' ||
         event.urlAfterRedirects === '/registro' ||
-        event.urlAfterRedirects === '/admin' 
+        event.urlAfterRedirects === '/panel' // <-- AÑADIMOS ESTA CONDICIÓN
       ) {
         this.showLayout.set(false);
       } else {
