@@ -1,72 +1,108 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RotiYa - Menú</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<div class="container my-3">
+  
+  <!-- BARRA DE NAVEGACIÓN DE CATEGORÍAS (DIRECTAMENTE AQUÍ) -->
+  <nav class="category-nav">
+    <button class="category-item" (click)="changePage('principales')" [class.active]="currentPage === 'principales'">
+      Platos Principales
+    </button>
+    <button class="category-item" (click)="changePage('entradas')" [class.active]="currentPage === 'entradas'">
+      Entradas
+    </button>
+    <button class="category-item" (click)="changePage('postres')" [class.active]="currentPage === 'postres'">
+      Postres
+    </button>
+    <button class="category-item" (click)="changePage('bebidas')" [class.active]="currentPage === 'bebidas'">
+      Bebidas
+    </button>
+  </nav>
 
-  <style>
-    body { padding-bottom: 72px; } /* espacio para la navbar inferior */
-  </style>
-</head>
-<body class="bg-light">
+  <!-- LISTAS DE PRODUCTOS (CÓDIGO COMPLETO PARA CADA SECCIÓN) -->
+  <div class="mt-4">
+    @switch (currentPage) {
 
-  <div class="container py-5">
-    <h2 class="mb-3 text-center brand-text">Menú de Productos</h2>
-       <!-- Panel categorías -->
-    <app-menu-categories>      </app-menu-categories>
+      @case ('principales') {
+        <h2 class="mb-4 text-center brand-text">Platos Principales</h2>
+        <div class="row g-4">
+          @for (producto of productosPrincipales(); track producto.nombre) {
+            <div class="col-md-4">
+              <div class="card h-100 shadow-sm">
+                <img [src]="producto.img" class="card-img-top" [alt]="producto.nombre" style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">{{ producto.nombre }}</h5>
+                  <p class="card-text text-muted small">{{ producto.descripcion }}</p>
+                  <div class="mt-auto d-flex justify-content-between align-items-center">
+                    <p class="text-success fw-bold fs-5 mb-0">$ {{ producto.precio.toFixed(2) }}</p>
+                    <button class="btn btn-primary">Añadir</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          } @empty { <p class="text-center text-muted col-12">No hay platos principales disponibles.</p> }
+        </div>
+      }
+
+      @case ('entradas') {
+        <h2 class="mb-4 text-center brand-text">Entradas</h2>
+        <div class="row g-4">
+          @for (producto of entradas(); track producto.nombre) {
+            <div class="col-md-4">
+              <div class="card h-100 shadow-sm">
+                <img [src]="producto.img" class="card-img-top" [alt]="producto.nombre" style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">{{ producto.nombre }}</h5>
+                  <p class="card-text text-muted small">{{ producto.descripcion }}</p>
+                  <div class="mt-auto d-flex justify-content-between align-items-center">
+                    <p class="text-success fw-bold fs-5 mb-0">$ {{ producto.precio.toFixed(2) }}</p>
+                    <button class="btn btn-primary">Añadir</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          } @empty { <p class="text-center text-muted col-12">No hay entradas disponibles.</p> }
+        </div>
+      }
+      
+      @case ('postres') {
+        <h2 class="mb-4 text-center brand-text">Postres</h2>
+        <div class="row g-4">
+          @for (producto of postres(); track producto.nombre) {
+            <div class="col-md-4">
+              <div class="card h-100 shadow-sm">
+                <img [src]="producto.img" class="card-img-top" [alt]="producto.nombre" style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">{{ producto.nombre }}</h5>
+                  <p class="card-text text-muted small">{{ producto.descripcion }}</p>
+                  <div class="mt-auto d-flex justify-content-between align-items-center">
+                    <p class="text-success fw-bold fs-5 mb-0">$ {{ producto.precio.toFixed(2) }}</p>
+                    <button class="btn btn-primary">Añadir</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          } @empty { <p class="text-center text-muted col-12">No hay postres disponibles.</p> }
+        </div>
+      }
+
+      @case ('bebidas') {
+        <h2 class="mb-4 text-center brand-text">Bebidas</h2>
+        <div class="row g-4">
+          @for (producto of bebidas(); track producto.nombre) {
+            <div class="col-md-4">
+              <div class="card h-100 shadow-sm">
+                <img [src]="producto.img" class="card-img-top" [alt]="producto.nombre" style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">{{ producto.nombre }}</h5>
+                  <p class="card-text text-muted small">{{ producto.descripcion }}</p>
+                  <div class="mt-auto d-flex justify-content-between align-items-center">
+                    <p class="text-success fw-bold fs-5 mb-0">$ {{ producto.precio.toFixed(2) }}</p>
+                    <button class="btn btn-primary">Añadir</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          } @empty { <p class="text-center text-muted col-12">No hay bebidas disponibles.</p> }
+        </div>
+      }
+    }
   </div>
-
-  <div class="container">
-    <div class="row g-4" id="productos">
-      <div class="col-md-4" id="entrada">
-        <div class="card h-100 shadow-sm">
-          <img src="https://www.bekiacocina.com/images/cocina/0000/265-h.jpg" class="card-img-top" alt="Empanadas">
-          <div class="card-body">
-            <h5 class="card-title">Empanadas de carne</h5>
-            <p class="card-text">Carne vacuna envuelta en masa criolla, cocinada al horno de barro.</p>
-            <p class="text-success fw-bold">$12.99</p>
-            <button class="btn btn-primary w-100 add-to-cart">Añadir</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4" id="plato-principal">
-        <div class="card h-100 shadow-sm">
-          <img src="https://lareceta.com.ar/uploads/notas/phpDPicu2.jpg" class="card-img-top" alt="Pollo">
-          <div class="card-body">
-            <h5 class="card-title">Pollo a la parrilla</h5>
-            <p class="card-text">Excelente selección de pollo con limón o chimichurri, a las brasas.</p>
-            <p class="text-success fw-bold">$15.00</p>
-            <button class="btn btn-primary w-100 add-to-cart">Añadir</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4" id="postres">
-        <div class="card h-100 shadow-sm">
-          <img src="https://www.bekiacocina.com/images/cocina/0000/607-h.jpg" class="card-img-top" alt="Nachos">
-          <div class="card-body">
-            <h5 class="card-title">Nachos con salsa</h5>
-            <p class="card-text">Exquisitos nachos de maíz con variedad de salsas para disfrutar.</p>
-            <p class="text-success fw-bold">$9.99</p>
-            <button class="btn btn-primary w-100 add-to-cart">Añadir</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4 d-none" id="bebidas">
-        <div class="card h-100 shadow-sm">
-          <img src="https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Bebida">
-          <div class="card-body">
-            <h5 class="card-title">Limonada casera</h5>
-            <p class="card-text">Refrescante limonada con menta.</p>
-            <p class="text-success fw-bold">$4.99</p>
-            <button class="btn btn-primary w-100 add-to-cart">Añadir</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>

@@ -1,30 +1,18 @@
-<div class="bg-white border rounded shadow-sm mb-4">
-  <div class="container py-2">
-    <ul class="nav nav-pills nav-justified">
-      <li class="nav-item">
-        <a class="nav-link"
-           routerLink="/entrada"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{ exact: true }">Entrada</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link"
-           routerLink="/menu"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{ exact: true }">Plato principal</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link"
-           routerLink="/postres"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{ exact: true }">Postres</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link"
-           routerLink="/bebidas"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{ exact: true }">Bebidas</a>
-      </li>
-    </ul>
-  </div>
-</div>
+<nav class="category-nav">
+  <button class="category-item" (click)="changePage('entradas')" [class.active]="currentPage === 'entradas'">
+    <span class="icon"> appetizers </span>
+    <span>Entradas</span>
+  </button>
+  <button class="category-item" (click)="changePage('principales')" [class.active]="currentPage === 'principales'">
+    <span class="icon"> restaurant </span>
+    <span>Principal</span>
+  </button>
+  <button class="category-item" (click)="changePage('postres')" [class.active]="currentPage === 'postres'">
+    <span class="icon"> icecream </span>
+    <span>Postres</span>
+  </button>
+  <button class="category-item" (click)="changePage('bebidas')" [class.active]="currentPage === 'bebidas'">
+    <span class="icon"> local_bar </span>
+    <span>Bebidas</span>
+  </button>
+</nav>

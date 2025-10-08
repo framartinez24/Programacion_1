@@ -1,0 +1,41 @@
+.category-nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #F87060; /* Naranja principal */
+  padding: 0.5rem;
+  border-radius: 50px; // Muy redondeado
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.category-item {
+  background: none;
+  border: none;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Google Sans', sans-serif; // O la fuente que prefieras
+  font-weight: 500;
+
+  .icon {
+    font-family: 'Material Symbols Outlined'; // Para usar los iconos
+    font-size: 2rem;
+  }
+
+  span {
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+
+  &.active {
+    background-color: #fff;
+    color: #F87060;
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
