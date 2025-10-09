@@ -1,8 +1,20 @@
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-<a class="navbar-brand" href="menu.html">
-  <img src="rotiya2.png" alt="RotiYa" height="32" class="d-inline-block align-text-top">
-</a>
-<a href="/carrito" class="btn btn-outline-light ms-auto">Carrito <span class="badge bg-danger">2</span></a>
-    </div>
-  </nav>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/menu">
+      <!-- Asumo que tienes tu logo en la carpeta public -->
+      <img src="/rotiya2.png" alt="RotiYa" style="height: 32px;" class="d-inline-block align-text-top">
+    </a>
+    <a routerLink="/carrito" class="btn btn-outline-light ms-auto">
+      Carrito 
+      <!--
+        LA MAGIA: 
+        - @if: Solo muestra el número si hay más de 0 items.
+        - {{ cartItemCount() }}: Muestra el valor de la señal. 
+          Usamos () porque es una señal.
+      -->
+      @if (cartItemCount() > 0) {
+        <span class="badge bg-danger ms-1">{{ cartItemCount() }}</span>
+      }
+    </a>
+  </div>
+</nav>

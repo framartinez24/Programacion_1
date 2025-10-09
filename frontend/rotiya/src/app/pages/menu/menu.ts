@@ -1,8 +1,9 @@
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { AdminDataService, Resena } from '../panel-admin/admin-data';
+import { AdminDataService, Producto, Resena } from '../panel-admin/admin-data';
 import { MenuStateService, MenuPage } from '../../shared/menu-state';
+import { CartService } from '../../shared/cart'; 
 
 @Component({
   selector: 'app-menu',
@@ -14,23 +15,27 @@ import { MenuStateService, MenuPage } from '../../shared/menu-state';
 export class Menu {
   private dataService = inject(AdminDataService);
   private menuState = inject(MenuStateService);
+  private cartService = inject(CartService); // <-- 2. Inyectamos el CartService
 
-  // La página actual ahora viene DIRECTAMENTE del servicio
   currentPage = this.menuState.currentPage;
-
-  // El resto de las propiedades que ya funcionaban
+  
   resenas = this.dataService.resenas;
   todosLosProductos = this.dataService.productos;
   newResena = { productoNombre: '', nombre: '', comentario: '', calificacion: 5 };
-
+  
   productosPrincipales = computed(() => this.todosLosProductos().filter(p => p.categoria === 'Plato principal'));
   entradas = computed(() => this.todosLosProductos().filter(p => p.categoria === 'Entrada'));
   postres = computed(() => this.todosLosProductos().filter(p => p.categoria === 'Postres'));
   bebidas = computed(() => this.todosLosProductos().filter(p => p.categoria === 'Bebidas'));
 
-  // Esta función ahora también habla con el servicio
   changePage(page: MenuPage): void {
     this.menuState.changePage(page);
+  }
+
+  // 3. NUEVA FUNCIÓN para añadir productos al carrito
+  addToCart(producto: Producto): void {
+    this.cartService.addProduct(producto);
+    console.log(`${producto.nombre} añadido al carrito.`); // Mensaje para verificar en la consola
   }
 
   submitResena(form: NgForm): void {

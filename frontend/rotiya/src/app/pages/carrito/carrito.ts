@@ -1,67 +1,52 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface CartItem {
-  name: string;
-  unitPrice: number;
-  quantity: number;
-}
+import { Router, RouterModule } from '@angular/router';
+import { CartService } from '../../shared/cart';
 
 @Component({
   selector: 'app-carrito',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './carrito.html',
   styleUrl: './carrito.scss'
 })
 export class Carrito {
-  cartItems: CartItem[] = [
-    {
-      name: 'Pollo a la parrilla',
-      unitPrice: 20.00,
-      quantity: 1
-    },
-    {
-      name: 'Empanadas de carne',
-      unitPrice: 12.00,
-      quantity: 2
-    }
-  ];
+  private cartService = inject(CartService);
+  private router = inject(Router);
 
-  // Calcular el subtotal de un item
-  getLineTotal(item: CartItem): number {
-    return item.unitPrice * item.quantity;
+  // Exponemos las señales del servicio a la vista
+  cartItems = this.cartService.cartItems;
+  totalPrice = this.cartService.totalPrice;
+
+  // ¡LA CLAVE ESTÁ AQUÍ!
+  // Creamos una nueva señal para controlar qué se muestra.
+  // Por defecto, se muestra el carrito (false).
+  showConfirmation = signal(false);
+
+  // --- MÉTODOS ---
+
+  removeFromCart(productName: string): void {
+    this.cartService.removeProduct(productName);
   }
 
-  // Calcular el subtotal del carrito
-  getSubtotal(): number {
-    return this.cartItems.reduce((sum, item) => sum + this.getLineTotal(item), 0);
-  }
-
-  // Calcular el total (por ahora igual al subtotal)
-  getTotal(): number {
-    return this.getSubtotal();
-  }
-
-  // Calcular cantidad total de items
-  getTotalItems(): number {
-    return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  }
-
-  // Incrementar cantidad
-  incrementQuantity(item: CartItem): void {
-    item.quantity++;
-  }
-
-  // Decrementar cantidad
-  decrementQuantity(item: CartItem): void {
-    if (item.quantity > 0) {
-      item.quantity--;
+  clearCart(): void {
+    if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+      this.cartService.clearCart();
     }
   }
 
-  // Formatear precio
-  formatPrice(price: number): string {
-    return price.toFixed(2);
+  // Lógica de "pago" actualizada
+  checkout(): void {
+    // 1. Vaciamos el carrito
+    this.cartService.clearCart();
+    // 2. En lugar de navegar, cambiamos el estado para mostrar la confirmación
+    this.showConfirmation.set(true);
+  }
+
+  // Nueva función para el botón "Volver al Menú"
+  backToMenu(): void {
+    this.router.navigate(['/menu']);
+    // Opcional: Reseteamos la vista por si el usuario vuelve al carrito con el botón "atrás" del navegador
+    this.showConfirmation.set(false);
   }
 }

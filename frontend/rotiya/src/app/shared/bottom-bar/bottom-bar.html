@@ -7,7 +7,6 @@
         </a>
       </li>
       <li class="nav-item">
-        <!-- ESTE BOTÓN AHORA LLAMA A LA FUNCIÓN ESPECIAL -->
         <a class="nav-link py-2" (click)="goToResenas()" style="cursor: pointer;">
           <i class="bi bi-star fs-5 d-block"></i><small>Reseñas</small>
         </a>
@@ -15,7 +14,14 @@
       <li class="nav-item">
         <a class="nav-link py-2 position-relative" routerLink="/carrito" routerLinkActive="active">
           <i class="bi bi-cart fs-5 d-block"></i><small>Carrito</small>
-          <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger">0</span>
+          <!--
+            CONECTAMOS EL BADGE, IGUAL QUE EN LA BARRA SUPERIOR
+          -->
+          @if (cartItemCount() > 0) {
+            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger">
+              {{ cartItemCount() }}
+            </span>
+          }
         </a>
       </li>
       <li class="nav-item">
