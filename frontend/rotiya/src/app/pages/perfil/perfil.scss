@@ -1,0 +1,12 @@
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+// Pequeña mejora para que el título se vea naranja
+.brand-text {
+  color: #F87060;
+}
