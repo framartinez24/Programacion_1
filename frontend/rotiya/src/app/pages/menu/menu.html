@@ -22,7 +22,6 @@
                   <p class="card-text text-muted small">{{ producto.descripcion }}</p>
                   <div class="mt-auto d-flex justify-content-between align-items-center">
                     <p class="text-success fw-bold fs-5 mb-0">$ {{ producto.precio.toFixed(2) }}</p>
-                    <!-- BOTÓN CONECTADO -->
                     <button class="btn btn-primary" (click)="addToCart(producto)">Añadir</button>
                   </div>
                 </div>
@@ -44,7 +43,6 @@
                   <p class="card-text text-muted small">{{ producto.descripcion }}</p>
                   <div class="mt-auto d-flex justify-content-between align-items-center">
                     <p class="text-success fw-bold fs-5 mb-0">$ {{ producto.precio.toFixed(2) }}</p>
-                    <!-- BOTÓN CONECTADO -->
                     <button class="btn btn-primary" (click)="addToCart(producto)">Añadir</button>
                   </div>
                 </div>
@@ -66,7 +64,6 @@
                   <p class="card-text text-muted small">{{ producto.descripcion }}</p>
                   <div class="mt-auto d-flex justify-content-between align-items-center">
                     <p class="text-success fw-bold fs-5 mb-0">$ {{ producto.precio.toFixed(2) }}</p>
-                    <!-- BOTÓN CONECTADO -->
                     <button class="btn btn-primary" (click)="addToCart(producto)">Añadir</button>
                   </div>
                 </div>
@@ -88,7 +85,6 @@
                   <p class="card-text text-muted small">{{ producto.descripcion }}</p>
                   <div class="mt-auto d-flex justify-content-between align-items-center">
                     <p class="text-success fw-bold fs-5 mb-0">$ {{ producto.precio.toFixed(2) }}</p>
-                    <!-- BOTÓN CONECTADO -->
                     <button class="btn btn-primary" (click)="addToCart(producto)">Añadir</button>
                   </div>
                 </div>
@@ -99,7 +95,62 @@
       }
       
       @case ('resenas') {
-        <!-- ... (la sección de reseñas no cambia) ... -->
+        <div>
+          <h2 class="mb-4 text-center brand-text">Reseñas de Clientes</h2>
+          
+          <div class="card mb-5 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Deja tu opinión</h5>
+              <form #resenaForm="ngForm" (ngSubmit)="submitResena(resenaForm)">
+                
+                <div class="mb-3">
+                  <label for="resenaProducto" class="form-label">¿Sobre qué producto quieres opinar?</label>
+                  <select id="resenaProducto" name="resenaProducto" class="form-select" [(ngModel)]="newResena.productoNombre" required>
+                    <option value="" disabled>Selecciona un producto...</option>
+                    @for (producto of todosLosProductos(); track producto.nombre) {
+                      <option [value]="producto.nombre">{{ producto.nombre }}</option>
+                    }
+                  </select>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="resenaNombre" class="form-label">Tu nombre</label>
+                  <input type="text" id="resenaNombre" name="resenaNombre" class="form-control" [(ngModel)]="newResena.nombre" required>
+                </div>
+                <div class="mb-3">
+                  <label for="resenaComentario" class="form-label">Comentario</label>
+                  <textarea id="resenaComentario" name="resenaComentario" class="form-control" [(ngModel)]="newResena.comentario" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="resenaCalificacion" class="form-label">Calificación: {{ newResena.calificacion }} / 5</label>
+                  <input type="range" id="resenaCalificacion" name="resenaCalificacion" class="form-range" min="1" max="5" step="1" [(ngModel)]="newResena.calificacion">
+                </div>
+                <button type="submit" class="btn btn-primary" [disabled]="resenaForm.invalid">Enviar Reseña</button>
+              </form>
+            </div>
+          </div>
+
+          @for (resena of resenas(); track resena.fecha + resena.nombre) {
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h6 class="card-subtitle mb-1 text-muted">{{ resena.nombre }}</h6>
+                    <p class="card-text fw-bold mb-2">Opinó sobre: {{ resena.productoNombre }}</p>
+                  </div>
+                  <div class="text-warning">
+                    @for (star of [].constructor(resena.calificacion); track $index) { <i class="bi bi-star-fill"></i> }
+                    @for (star of [].constructor(5 - resena.calificacion); track $index) { <i class="bi bi-star"></i> }
+                  </div>
+                </div>
+                <p class="card-text fst-italic">"{{ resena.comentario }}"</p>
+                <small class="text-muted">{{ resena.fecha }}</small>
+              </div>
+            </div>
+          } @empty {
+            <p class="text-center text-muted">Aún no hay reseñas. ¡Sé el primero en dejar una!</p>
+          }
+        </div>
       }
     }
   </div>
