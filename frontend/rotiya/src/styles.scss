@@ -1,3 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
+/* 1. Importa los estilos principales de Bootstrap. 
+  Esto asegura que toda la app se vea bien.
+*/
 @import "bootstrap/dist/css/bootstrap.min.css";
-body { padding-bottom: 72px; } /* alto aprox de la bottom bar */
+
+/* 2. LA CORRECCIÓN CLAVE: Importa los iconos de Bootstrap.
+  Esto arreglará la BottomBar y las estrellas de las reseñas.
+*/
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* ============================================= */
+/* Tus otros estilos globales pueden ir aquí abajo */
+/* ============================================= */
+
+body {
+  /* Un pequeño ajuste para que el fondo sea un gris muy claro */
+  background-color: #f8f9fa;
+  /* Espacio en la parte inferior para que la BottomBar no tape el contenido */
+  padding-bottom: 72px; 
+}
+
+.brand-text {
+  color: #F87060; // Tu color naranja/rojo principal
+}

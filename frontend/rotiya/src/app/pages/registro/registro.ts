@@ -1,24 +1,67 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../shared/auth';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  // ¡Reutilizamos los estilos del login para mantener la consistencia!
-  styleUrls: ['../login/login.scss'],
-  imports: [RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './registro.html',
+  styleUrl: './registro.scss'
 })
 export class Registro {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(private router: Router) {}
+  registerForm: FormGroup;
+  isLoading = false;
+  registerError: string | null = null;
+  registerSuccess: string | null = null;
+
+  constructor() {
+    // Definimos la estructura y las validaciones del formulario,
+    // usando los nombres de campo que espera tu backend.
+    this.registerForm = this.fb.group({
+      nombre: ['', Validators.required],
+      correo: ['', [Validators.required, Validators.email]],
+      telefono: ['', Validators.required],
+      direccion: [''], // Dirección no es obligatoria
+      contraseña: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
 
   onRegister(): void {
-    console.log('Formulario de registro enviado.');
-    // Usamos un alert temporal para confirmar que el registro funcionó
-    alert('¡Registro exitoso! Ahora puedes iniciar sesión con tu nueva cuenta.');
-    // Redirigimos al usuario a la página de login
-    this.router.navigate(['/login']);
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading = true;
+    this.registerError = null;
+    this.registerSuccess = null;
+
+    // Llamamos a la nueva función register() de nuestro servicio
+    this.authService.register(this.registerForm.value).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        // Si la respuesta tiene un error (por el catchError), lo mostramos
+        if (response && response.error) {
+          this.registerError = response.error?.mensaje || 'Error desconocido al registrar.';
+        } else {
+          // Si todo va bien, mostramos un mensaje de éxito y redirigimos
+          this.registerSuccess = '¡Registro exitoso! Redirigiendo al login...';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000); // Esperamos 2 segundos para que el usuario lea el mensaje
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.registerError = err.error?.mensaje || 'Error de conexión. Intente nuevamente.';
+      }
+    });
   }
 }

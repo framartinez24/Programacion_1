@@ -1,26 +1,43 @@
-// 1. Importamos el módulo 'color' de SASS, que es la forma moderna de hacerlo.
-@use "sass:color";
+// 1. Usamos '@use' para importar el módulo de color de SASS de forma moderna.
+@use 'sass:color';
 
-// Variable para nuestro color naranja personalizado.
-$naranja-rotiya: #fd7e14;
+// Definimos nuestro color de marca
+$rotiya-orange: #F87060;
 
-// Clase para el texto del título "Iniciar Sesión".
+// Estilos para el contenedor del login (sin cambios)
+.login-card {
+  background-color: white;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+}
+
+// Estilo para el título "Iniciar Sesión" (sin cambios)
 .brand-text {
-  color: $naranja-rotiya !important;
+  color: $rotiya-orange;
   font-weight: bold;
 }
 
-// Clase para nuestro botón personalizado.
-.btn-rotiya {
-  background-color: $naranja-rotiya;
-  border-color: $naranja-rotiya;
-  color: white;
+// Sobreescribimos el botón primario solo para este componente
+.btn-primary {
+  background-color: $rotiya-orange;
+  border-color: $rotiya-orange;
 
-  // Efecto visual cuando pasas el mouse por encima.
+  // Efecto al pasar el mouse
   &:hover {
-    // 2. Usamos la función moderna 'color.adjust' en lugar de 'darken'.
-    background-color: color.adjust($naranja-rotiya, $lightness: -10%);
-    border-color: color.adjust($naranja-rotiya, $lightness: -10%);
+    // 2. Usamos la sintaxis moderna 'color.adjust' para oscurecer el color.
+    background-color: color.adjust($rotiya-orange, $lightness: -10%);
+    border-color: color.adjust($rotiya-orange, $lightness: -10%);
+  }
+
+  // Estilo para cuando el botón está deshabilitado
+  &:disabled {
+    background-color: $rotiya-orange;
+    border-color: $rotiya-orange;
+    opacity: 0.65;
   }
 }
 
+// Aseguramos que el feedback de validación siempre se vea
+.invalid-feedback {
+  display: block;
+}

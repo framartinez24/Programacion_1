@@ -2,38 +2,60 @@
   <div class="card shadow p-4" style="max-width: 450px; width: 100%;">
     <h3 class="text-center mb-3 brand-text">Crear Cuenta</h3>
 
-    <!-- Conectamos el formulario a la función onRegister() de nuestro componente -->
-    <form (ngSubmit)="onRegister()">
+    <!-- Mensajes de éxito o error -->
+    @if (registerSuccess) {
+      <div class="alert alert-success">{{ registerSuccess }}</div>
+    }
+    @if (registerError) {
+      <div class="alert alert-danger">{{ registerError }}</div>
+    }
+
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
       <div class="mb-3">
         <label for="name" class="form-label">Nombre</label>
-        <input type="text" class="form-control" id="name" required>
+        <input type="text" class="form-control" id="name" formControlName="nombre" [class.is-invalid]="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched">
+        @if (registerForm.get('nombre')?.hasError('required') && registerForm.get('nombre')?.touched) {
+          <div class="invalid-feedback d-block">El nombre es requerido.</div>
+        }
       </div>
       <div class="mb-3">
         <label for="email" class="form-label">Correo</label>
-        <input type="email" class="form-control" id="email" required>
+        <input type="email" class="form-control" id="email" formControlName="correo" [class.is-invalid]="registerForm.get('correo')?.invalid && registerForm.get('correo')?.touched">
+        @if (registerForm.get('correo')?.hasError('required') && registerForm.get('correo')?.touched) {
+          <div class="invalid-feedback d-block">El correo es requerido.</div>
+        }
+        @if (registerForm.get('correo')?.hasError('email') && registerForm.get('correo')?.touched) {
+          <div class="invalid-feedback d-block">El formato del correo no es válido.</div>
+        }
       </div>
       <div class="mb-3">
         <label for="phone" class="form-label">Teléfono</label>
-        <input type="tel" class="form-control" id="phone" required>
-      </div>
-      <div class="mb-3">
-        <label for="dob" class="form-label">Fecha de nacimiento</label>
-        <input type="date" class="form-control" id="dob" required>
+        <input type="tel" class="form-control" id="phone" formControlName="telefono" [class.is-invalid]="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched">
+        @if (registerForm.get('telefono')?.hasError('required') && registerForm.get('telefono')?.touched) {
+          <div class="invalid-feedback d-block">El teléfono es requerido.</div>
+        }
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" required>
+        <input type="password" class="form-control" id="password" formControlName="contraseña" [class.is-invalid]="registerForm.get('contraseña')?.invalid && registerForm.get('contraseña')?.touched">
+        @if (registerForm.get('contraseña')?.hasError('required') && registerForm.get('contraseña')?.touched) {
+          <div class="invalid-feedback d-block">La contraseña es requerida.</div>
+        }
+        @if (registerForm.get('contraseña')?.hasError('minlength') && registerForm.get('contraseña')?.touched) {
+          <div class="invalid-feedback d-block">La contraseña debe tener al menos 6 caracteres.</div>
+        }
       </div>
-      <div class="mb-3">
-        <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
-        <input type="password" class="form-control" id="confirmPassword" required>
-      </div>
-      <!-- Aplicamos nuestra clase de botón naranja personalizada -->
-      <button type="submit" class="btn btn-rotiya w-100">Registrarse</button>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading">
+        @if (isLoading) {
+          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+          <span role="status"> Registrando...</span>
+        } @else {
+          Registrarse
+        }
+      </button>
     </form>
     <hr>
-    <!-- Usamos routerLink para navegar de vuelta al login -->
     <p class="text-center">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
   </div>
 </div>
-

@@ -1,27 +1,46 @@
 <div class="container d-flex justify-content-center align-items-center vh-100">
   <div class="card login-card p-4" style="max-width:420px;width:100%;">
-    <!-- El título "Iniciar Sesión" usará la clase .brand-text que definimos en el SCSS -->
     <h3 class="text-center mb-3 brand-text">Iniciar Sesión</h3>
 
-    @if (mostrarError) {
+    <!-- Mensaje de error (ahora dinámico) -->
+    @if (loginError) {
       <div class="alert alert-danger" role="alert">
-        ❌ Credenciales incorrectas. Intenta nuevamente.
+        ❌ {{ loginError }}
       </div>
     }
 
-    <form (ngSubmit)="onLogin()">
+    <!-- Conectamos el formulario al FormGroup y al evento (ngSubmit) -->
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
       <div class="mb-3">
-        <label for="email" class="form-label">Correo o Teléfono</label>
-        <input type="email" class="form-control" id="email" placeholder="usuario@mail.com" required>
+        <label for="email" class="form-label">Correo</label>
+        <input type="email" class="form-control" id="email" placeholder="usuario@mail.com" formControlName="correo"
+               [class.is-invalid]="loginForm.get('correo')?.invalid && loginForm.get('correo')?.touched">
+        
+        <!-- Mensajes de error de validación -->
+        @if (loginForm.get('correo')?.hasError('required') && loginForm.get('correo')?.touched) {
+          <div class="invalid-feedback d-block">El correo es requerido.</div>
+        }
+        @if (loginForm.get('correo')?.hasError('email') && loginForm.get('correo')?.touched) {
+          <div class="invalid-feedback d-block">El formato del correo no es válido.</div>
+        }
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" required>
+        <input type="password" class="form-control" id="password" formControlName="contraseña"
+               [class.is-invalid]="loginForm.get('contraseña')?.invalid && loginForm.get('contraseña')?.touched">
+        @if (loginForm.get('contraseña')?.hasError('required') && loginForm.get('contraseña')?.touched) {
+          <div class="invalid-feedback d-block">La contraseña es requerida.</div>
+        }
       </div>
-      <!--
-        CAMBIO CLAVE: Reemplazamos 'btn-primary' por nuestra clase personalizada 'btn-rotiya'
-      -->
-      <button type="submit" class="btn btn-rotiya w-100">Iniciar sesión</button>
+      
+      <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading">
+        @if (isLoading) {
+          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+          <span role="status"> Verificando...</span>
+        } @else {
+          Iniciar sesión
+        }
+      </button>
     </form>
 
     <div class="text-center mt-3">
@@ -31,4 +50,3 @@
     <p class="text-center">¿No tienes una cuenta? <a routerLink="/registro">Regístrate</a></p>
   </div>
 </div>
-
