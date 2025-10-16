@@ -2,13 +2,8 @@
   <div class="card shadow p-4" style="max-width: 450px; width: 100%;">
     <h3 class="text-center mb-3 brand-text">Crear Cuenta</h3>
 
-    <!-- Mensajes de éxito o error -->
-    @if (registerSuccess) {
-      <div class="alert alert-success">{{ registerSuccess }}</div>
-    }
-    @if (registerError) {
-      <div class="alert alert-danger">{{ registerError }}</div>
-    }
+    @if (registerSuccess) { <div class="alert alert-success">{{ registerSuccess }}</div> }
+    @if (registerError) { <div class="alert alert-danger">{{ registerError }}</div> }
 
     <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
       <div class="mb-3">
@@ -44,6 +39,16 @@
         @if (registerForm.get('contraseña')?.hasError('minlength') && registerForm.get('contraseña')?.touched) {
           <div class="invalid-feedback d-block">La contraseña debe tener al menos 6 caracteres.</div>
         }
+      </div>
+
+      <!-- CAMBIO AQUÍ: Añadimos el selector de Rol -->
+      <div class="mb-3">
+        <label for="rol" class="form-label">Rol (Para Pruebas)</label>
+        <select id="rol" class="form-select" formControlName="rol">
+          <option value="cliente">Cliente</option>
+          <option value="empleado">Empleado</option>
+          <option value="admin">Admin</option>
+        </select>
       </div>
 
       <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading">

@@ -22,14 +22,14 @@ export class Registro {
   registerSuccess: string | null = null;
 
   constructor() {
-    // Definimos la estructura y las validaciones del formulario,
-    // usando los nombres de campo que espera tu backend.
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       telefono: ['', Validators.required],
-      direccion: [''], // Dirección no es obligatoria
-      contraseña: ['', [Validators.required, Validators.minLength(6)]]
+      direccion: [''],
+      contraseña: ['', [Validators.required, Validators.minLength(6)]],
+      // CAMBIO AQUÍ: Añadimos el campo 'rol' al formulario
+      rol: ['cliente', Validators.required] 
     });
   }
 
@@ -43,19 +43,17 @@ export class Registro {
     this.registerError = null;
     this.registerSuccess = null;
 
-    // Llamamos a la nueva función register() de nuestro servicio
+    // Ahora el .value del formulario ya incluye el rol seleccionado
     this.authService.register(this.registerForm.value).subscribe({
       next: (response) => {
         this.isLoading = false;
-        // Si la respuesta tiene un error (por el catchError), lo mostramos
         if (response && response.error) {
           this.registerError = response.error?.mensaje || 'Error desconocido al registrar.';
         } else {
-          // Si todo va bien, mostramos un mensaje de éxito y redirigimos
           this.registerSuccess = '¡Registro exitoso! Redirigiendo al login...';
           setTimeout(() => {
             this.router.navigate(['/login']);
-          }, 2000); // Esperamos 2 segundos para que el usuario lea el mensaje
+          }, 2000);
         }
       },
       error: (err) => {
