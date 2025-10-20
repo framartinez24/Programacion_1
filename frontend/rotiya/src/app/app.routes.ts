@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-// 1. Importamos nuestro nuevo guardián
-import { authGuard } from './shared/auth.guard';
+import { authGuard } from './shared/auth.guard'; // Importamos nuestro nuevo guardián
 
 export const routes: Routes = [
   // --- Rutas Públicas (Cualquiera puede acceder) ---
@@ -13,22 +12,22 @@ export const routes: Routes = [
   { 
     path: 'menu',
     loadComponent: () => import('./pages/menu/menu').then(m => m.Menu),
-    canActivate: [authGuard] // <-- 2. Ponemos al guardián en la puerta
+    canActivate: [authGuard]
   },
   { 
     path: 'carrito',
     loadComponent: () => import('./pages/carrito/carrito').then(m => m.Carrito),
-    canActivate: [authGuard] // <-- 2. Ponemos al guardián en la puerta
+    canActivate: [authGuard]
   },
   { 
     path: 'perfil',
     loadComponent: () => import('./pages/perfil/perfil').then(m => m.Perfil),
-    canActivate: [authGuard] // <-- 2. Ponemos al guardián en la puerta
+    canActivate: [authGuard]
   },
   { 
     path: 'panel', 
     loadComponent: () => import('./pages/panel/panel').then(m => m.PanelComponent),
-    canActivate: [authGuard] // <-- 2. Ponemos al guardián en la puerta
+    canActivate: [authGuard]
   },
 
   // --- Ruta por defecto ---

@@ -1,7 +1,7 @@
 import { Component, inject, AfterViewInit, PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { AuthService } from '../../shared/auth'; // AuthService
 import { AdminDataService, Producto, Cliente, Empleado } from './admin-data';
 
 declare var bootstrap: any;
@@ -16,7 +16,7 @@ type AdminPage = 'stock' | 'clientes' | 'pedidos' | 'empleados';
 })
 export class Admin implements AfterViewInit {
   private dataService = inject(AdminDataService);
-  private router = inject(Router);
+  private authService = inject(AuthService); //Inyectamos el AuthService
   private isBrowser: boolean;
 
   productos = this.dataService.productos;
@@ -49,7 +49,10 @@ export class Admin implements AfterViewInit {
     }
   }
 
-  logout(): void { this.router.navigate(['/login']); }
+  // llamamos al método logout del servicio.
+  logout(): void {
+    this.authService.logout();
+  }
   
   saveProducto(form: NgForm) {
     if (form.invalid) return;

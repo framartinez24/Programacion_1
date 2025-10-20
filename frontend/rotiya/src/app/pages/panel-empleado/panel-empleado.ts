@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, inject, AfterViewInit, PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { AuthService } from '../../shared/auth'; // AuthService
 import { AdminDataService, Cliente } from '../panel-admin/admin-data';
 
 declare var bootstrap: any;
@@ -16,7 +16,7 @@ type EmpleadoPage = 'pedidos' | 'clientes' | 'stock';
 })
 export class PanelEmpleadoComponent implements AfterViewInit {
   private dataService = inject(AdminDataService);
-  private router = inject(Router);
+  private authService = inject(AuthService); // Inyectamos el AuthService
   private isBrowser: boolean;
 
   pedidos = this.dataService.pedidos;
@@ -25,7 +25,6 @@ export class PanelEmpleadoComponent implements AfterViewInit {
   estadosPedido = this.dataService.estadosPedido;
   currentPage: EmpleadoPage = 'pedidos';
 
-  // --- Propiedades para el modal de Cliente ---
   editingCliente: Partial<Cliente> = {};
   editingClienteIndex: number | null = null;
   private clienteModal: any;
@@ -42,7 +41,6 @@ export class PanelEmpleadoComponent implements AfterViewInit {
     }
   }
 
-  // --- Lógica para el modal de Cliente ---
   openClienteModal(index: number) {
     this.editingCliente = { ...this.clientes()[index] };
     this.editingClienteIndex = index;
@@ -59,7 +57,6 @@ export class PanelEmpleadoComponent implements AfterViewInit {
     form.reset();
   }
 
-  // --- Lógica de los botones de la tabla ---
   onDeleteCliente(index: number): void {
     if (confirm('¿Bloquear (eliminar) a este cliente?')) {
       this.dataService.deleteCliente(index);
@@ -79,7 +76,8 @@ export class PanelEmpleadoComponent implements AfterViewInit {
     this.dataService.updateEstadoPedido(index, selectElement.value);
   }
 
+  // llamamos al método logout del servicio.
   logout(): void {
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }
