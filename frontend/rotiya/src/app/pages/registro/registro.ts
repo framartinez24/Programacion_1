@@ -27,9 +27,7 @@ export class Registro {
       correo: ['', [Validators.required, Validators.email]],
       telefono: ['', Validators.required],
       direccion: [''],
-      contraseña: ['', [Validators.required, Validators.minLength(6)]],
-      // CAMBIO AQUÍ: Añadimos el campo 'rol' al formulario
-      rol: ['cliente', Validators.required] 
+      contraseña: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -43,7 +41,6 @@ export class Registro {
     this.registerError = null;
     this.registerSuccess = null;
 
-    // Ahora el .value del formulario ya incluye el rol seleccionado
     this.authService.register(this.registerForm.value).subscribe({
       next: (response) => {
         this.isLoading = false;

@@ -8,53 +8,37 @@
     <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
       <div class="mb-3">
         <label for="name" class="form-label">Nombre</label>
-        <input type="text" class="form-control" id="name" formControlName="nombre" [class.is-invalid]="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched">
-        @if (registerForm.get('nombre')?.hasError('required') && registerForm.get('nombre')?.touched) {
+        <input type="text" class="form-control" id="name" formControlName="nombre">
+        @if (registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched) {
           <div class="invalid-feedback d-block">El nombre es requerido.</div>
         }
       </div>
       <div class="mb-3">
         <label for="email" class="form-label">Correo</label>
-        <input type="email" class="form-control" id="email" formControlName="correo" [class.is-invalid]="registerForm.get('correo')?.invalid && registerForm.get('correo')?.touched">
-        @if (registerForm.get('correo')?.hasError('required') && registerForm.get('correo')?.touched) {
-          <div class="invalid-feedback d-block">El correo es requerido.</div>
-        }
-        @if (registerForm.get('correo')?.hasError('email') && registerForm.get('correo')?.touched) {
-          <div class="invalid-feedback d-block">El formato del correo no es válido.</div>
+        <input type="email" class="form-control" id="email" formControlName="correo">
+         @if (registerForm.get('correo')?.invalid && registerForm.get('correo')?.touched) {
+          <div class="invalid-feedback d-block">El correo es requerido o inválido.</div>
         }
       </div>
       <div class="mb-3">
         <label for="phone" class="form-label">Teléfono</label>
-        <input type="tel" class="form-control" id="phone" formControlName="telefono" [class.is-invalid]="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched">
-        @if (registerForm.get('telefono')?.hasError('required') && registerForm.get('telefono')?.touched) {
+        <input type="tel" class="form-control" id="phone" formControlName="telefono">
+        @if (registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched) {
           <div class="invalid-feedback d-block">El teléfono es requerido.</div>
         }
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" formControlName="contraseña" [class.is-invalid]="registerForm.get('contraseña')?.invalid && registerForm.get('contraseña')?.touched">
-        @if (registerForm.get('contraseña')?.hasError('required') && registerForm.get('contraseña')?.touched) {
-          <div class="invalid-feedback d-block">La contraseña es requerida.</div>
-        }
-        @if (registerForm.get('contraseña')?.hasError('minlength') && registerForm.get('contraseña')?.touched) {
-          <div class="invalid-feedback d-block">La contraseña debe tener al menos 6 caracteres.</div>
+        <input type="password" class="form-control" id="password" formControlName="contraseña">
+        @if (registerForm.get('contraseña')?.invalid && registerForm.get('contraseña')?.touched) {
+          <div class="invalid-feedback d-block">La contraseña es requerida (mín. 6 caracteres).</div>
         }
       </div>
 
-      <!-- CAMBIO AQUÍ: Añadimos el selector de Rol -->
-      <div class="mb-3">
-        <label for="rol" class="form-label">Rol (Para Pruebas)</label>
-        <select id="rol" class="form-select" formControlName="rol">
-          <option value="cliente">Cliente</option>
-          <option value="empleado">Empleado</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
 
       <button type="submit" class="btn btn-primary w-100" [disabled]="isLoading">
         @if (isLoading) {
-          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-          <span role="status"> Registrando...</span>
+          <span class="spinner-border spinner-border-sm"></span> Registrando...
         } @else {
           Registrarse
         }

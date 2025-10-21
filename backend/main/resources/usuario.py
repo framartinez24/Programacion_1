@@ -51,7 +51,7 @@ class UsuarioRecurso(Resource):
         return {"mensaje": "Usuario actualizado"}, 200
 
     
-    @role_required(roles=["administrador", "empleado"])
+    @role_required(roles=["admin", "empleado"])
     # Elimina recurso usuario
     def delete(self, id):
         usuario = db.session.query(UsuarioModel).get_or_404(id)
@@ -68,7 +68,7 @@ class UsuarioRecurso(Resource):
 
 # Recurso plural
 class UsuariosRecursos(Resource):
-    @role_required(roles = ["administrador"])
+    @role_required(roles = ["admin"])
     def get(self):
         # Paginación
         page = request.args.get("page", 1, type=int)

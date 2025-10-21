@@ -1,13 +1,16 @@
-import { Injectable, signal, effect, PLATFORM_ID, Inject } from '@angular/core';
+import { Injectable, signal, effect, PLATFORM_ID, Inject, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../../shared/auth';
+import { Observable, Subscriber, tap } from 'rxjs'; // Importamos Subscriber y Observable
 
 // Interfaces para tipado fuerte
 export interface Producto { nombre: string; categoria: string; precio: number; cantidad: number; descripcion: string; img: string; }
 export interface Cliente { nombre: string; email: string; telefono: string; }
 export interface Empleado { nombre: string; rol: string; }
 export interface Pedido { fecha: string; cliente: string; detalle: string; total: number; estado: string; }
-// INTERFAZ CORREGIDA: La reseña necesita saber a qué producto pertenece
 export interface Resena { productoNombre: string; nombre: string; comentario: string; calificacion: number; fecha: string; }
+export interface Usuario { id: number; nombre: string; correo: string; rol: string; }
 
 const LS_KEY = 'rotiya_admin_state_v1';
 
@@ -15,7 +18,10 @@ const LS_KEY = 'rotiya_admin_state_v1';
   providedIn: 'root'
 })
 export class AdminDataService {
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
   private isBrowser: boolean;
+  private apiUrl = 'http://127.0.0.1:3535';
 
   private readonly defaultState = {
     productos: [
@@ -43,28 +49,61 @@ export class AdminDataService {
   empleados = signal<Empleado[]>([]);
   pedidos = signal<Pedido[]>([]);
   resenas = signal<Resena[]>([]);
+  allUsers = signal<Usuario[]>([]);
   estadosPedido = ['Pendiente','En preparación','En reparto','Entregado','Cancelado'];
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) { this.isBrowser = isPlatformBrowser(this.platformId); if (this.isBrowser) { this.loadState(); effect(() => this.saveState()); } else { this.productos.set(this.defaultState.productos); this.clientes.set(this.defaultState.clientes); this.empleados.set(this.defaultState.empleados); this.pedidos.set(this.defaultState.pedidos); this.resenas.set(this.defaultState.resenas); } }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    if (this.isBrowser) {
+      this.loadState();
+      effect(() => this.saveState());
+    }
+  }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('access_token');
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  }
+
+  fetchAllUsers(): void {
+    if (!this.isBrowser) return;
+    this.http.get<Usuario[]>(`${this.apiUrl}/usuarios`, { headers: this.getAuthHeaders() })
+      .subscribe({
+        next: (users) => this.allUsers.set(users),
+        error: (err) => console.error('Error al obtener usuarios:', err)
+      });
+  }
+
+  // --- FUNCIÓN CORREGIDA ---
+  updateUserRole(userId: number, newRole: string): Observable<any> | undefined {
+    if (!this.isBrowser) {
+      return new Observable((subscriber: Subscriber<any>) => subscriber.complete());
+    }
+    return this.http.put(`${this.apiUrl}/usuario/${userId}`, { rol: newRole }, { headers: this.getAuthHeaders() }).pipe(
+      tap(() => {
+        this.allUsers.update(users => {
+          const user = users.find(u => u.id === userId);
+          if (user) { user.rol = newRole; }
+          return [...users];
+        });
+      })
+    );
+  }
+  
+  // --- MÉTODOS DE LOCALSTORAGE (COMPLETOS) ---
   private loadState(): void { const raw = localStorage.getItem(LS_KEY); const state = raw ? JSON.parse(raw) : structuredClone(this.defaultState); this.productos.set(state.productos || []); this.clientes.set(state.clientes || []); this.empleados.set(state.empleados || []); this.pedidos.set(state.pedidos || []); this.resenas.set(state.resenas || []); }
   private saveState(): void { if (!this.isBrowser) return; const currentState = { productos: this.productos(), clientes: this.clientes(), empleados: this.empleados(), pedidos: this.pedidos(), resenas: this.resenas() }; localStorage.setItem(LS_KEY, JSON.stringify(currentState)); }
-
-  // --- MÉTODOS RESTAURADOS ---
   addProducto = (prod: Producto) => this.productos.update(p => [...p, prod]);
   updateProducto = (index: number, prod: Producto) => this.productos.update(p => { p[index] = prod; return [...p]; });
   deleteProducto = (index: number) => this.productos.update(p => p.filter((_, i) => i !== index));
   incrementarCantidad = (index: number) => this.productos.update(p => { p[index].cantidad++; return [...p]; });
   decrementarCantidad = (index: number) => this.productos.update(p => { p[index].cantidad = Math.max(0, p[index].cantidad - 1); return [...p]; });
-
   addCliente = (cli: Cliente) => this.clientes.update(c => [...c, cli]);
   updateCliente = (index: number, cli: Cliente) => this.clientes.update(c => { c[index] = cli; return [...c]; });
   deleteCliente = (index: number) => this.clientes.update(c => c.filter((_, i) => i !== index));
-
   addEmpleado = (emp: Empleado) => this.empleados.update(e => [...e, emp]);
   updateEmpleado = (index: number, emp: Empleado) => this.empleados.update(e => { e[index] = emp; return [...e]; });
   deleteEmpleado = (index: number) => this.empleados.update(e => e.filter((_, i) => i !== index));
-
   updateEstadoPedido = (index: number, nuevoEstado: string) => this.pedidos.update(p => { p[index].estado = nuevoEstado; return [...p]; });
-  
   addResena = (resena: Resena) => this.resenas.update(r => [resena, ...r]);
 }

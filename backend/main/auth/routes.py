@@ -21,7 +21,19 @@ def login():
         return {'mensaje': 'Correo o contraseña inválidos'}, 401
 
 
-    access_token = create_access_token(identity=str(usuario.id))
+    # --- INICIO DE LA MODIFICACIÓN ---
+    # 1. Creamos un diccionario con los "claims" (datos) adicionales
+    #    Aquí incluimos el rol del usuario, que será leído por @role_required
+    claims = {"rol": usuario.rol}
+
+    # 2. Añadimos los 'claims' al crear el token de acceso
+    access_token = create_access_token(
+        identity=str(usuario.id),
+        additional_claims=claims
+    )
+    # --- FIN DE LA MODIFICACIÓN ---
+
+    # El token de refresco no necesita el rol, se queda igual
     refresh_token = create_refresh_token(identity=str(usuario.id))
 
     return jsonify({
@@ -34,10 +46,29 @@ def login():
 @auth.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
-    print("identity:", get_jwt_identity())
-    print("jwt:", get_jwt())
+    # --- INICIO DE LA MODIFICACIÓN ---
+    # Esto es crucial para que el error 403 no vuelva a aparecer
+    # cuando el token de acceso principal expire.
+    
+    # 1. Obtener el ID del usuario del token de refresco
     current_user_id = str(get_jwt_identity())
-    new_access_token = str(create_access_token(identity=current_user_id))
+    
+    # 2. Buscar al usuario en la DB para obtener su rol actual
+    usuario = db.session.query(UsuarioModel).get(current_user_id)
+    if not usuario:
+        # Esto es por seguridad, aunque es raro que pase
+        return {"mensaje": "Usuario no encontrado"}, 404
+
+    # 3. Crear los claims para el nuevo token
+    claims = {"rol": usuario.rol}
+
+    # 4. Crear el nuevo token de acceso CON los claims
+    new_access_token = str(create_access_token(
+        identity=current_user_id,
+        additional_claims=claims
+    ))
+    # --- FIN DE LA MODIFICACIÓN ---
+    
     return jsonify({
         'access_token': str(new_access_token)
     }), 200
@@ -77,6 +108,9 @@ def register():
 def register_():
     #Obtener usuario
     usuario = UsuarioModel.from_json(request.get_json())
+
+    usuario.rol = 'cliente'
+
     #Verificar si el mail ya existe en la db
     exists = db.session.query(UsuarioModel).filter(UsuarioModel.correo == usuario.correo).scalar() is not None
     if exists:
