@@ -3,21 +3,18 @@ import { Injectable, signal, effect, PLATFORM_ID, Inject, inject } from '@angula
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../shared/auth';
-import { Observable, Subscriber, tap } from 'rxjs'; // Importamos Subscriber y Observable
+import { Observable, Subscriber } from 'rxjs';
 
-// Interfaces para tipado fuerte
 export interface Producto { nombre: string; categoria: string; precio: number; cantidad: number; descripcion: string; img: string; }
 export interface Cliente { nombre: string; email: string; telefono: string; }
-export interface Empleado { nombre: string; rol: string; }
+export interface Empleado { id?: number; nombre: string; rol: string; }
 export interface Pedido { fecha: string; cliente: string; detalle: string; total: number; estado: string; }
 export interface Resena { productoNombre: string; nombre: string; comentario: string; calificacion: number; fecha: string; }
 export interface Usuario { id: number; nombre: string; correo: string; rol: string; }
 
 const LS_KEY = 'rotiya_admin_state_v1';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AdminDataService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
@@ -37,17 +34,17 @@ export class AdminDataService {
   };
   
   productos = signal<Producto[]>([]);
-  clientes = signal<Cliente[]>([]);
+  clientes  = signal<Cliente[]>([]);
   empleados = signal<Empleado[]>([]);
-  pedidos = signal<Pedido[]>([]);
-  resenas = signal<Resena[]>([]);
-  allUsers = signal<Usuario[]>([]);
-  // Estado de paginación y filtros para Usuarios
-  usersPage = signal<number>(1);
-  usersLimit = signal<number>(10);
+  pedidos   = signal<Pedido[]>([]);
+  resenas   = signal<Resena[]>([]);
+  allUsers  = signal<Usuario[]>([]);
+
+  usersPage    = signal<number>(1);
+  usersLimit   = signal<number>(10);
   usersHasNext = signal<boolean>(false);
   filtroNombre = signal<string>('');
-  filtroRol = signal<string>(''); // mapeo del requisito 'porCategoria' -> 'rol'
+  filtroRol    = signal<string>('');
   estadosPedido = ['Pendiente','En preparación','En reparto','Entregado','Cancelado'];
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
@@ -63,29 +60,26 @@ export class AdminDataService {
     return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
   }
 
-  // ---------------------------
-  //   USUARIOS (Backend)
-  // ---------------------------
+  private jsonAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('access_token');
+    const base: Record<string,string> = { 'Content-Type': 'application/json' };
+    if (token) base['Authorization'] = `Bearer ${token}`;
+    return new HttpHeaders(base);
+  }
 
-  /**
-   * Carga usuarios desde backend con paginación y filtros.
-   * Mantenemos el nombre para compatibilidad con el componente (mínimos cambios).
-   * Mapea 'limit' -> 'per_page' porque el backend expone 'per_page'.
-   * Implementa "lookahead" (per_page = limit + 1) para saber si hay siguiente página,
-   * ya que el backend no envía 'total'.
-   */
+  // ======== USUARIOS (paginación + filtros) ========
+
   fetchAllUsers(): void {
     if (!this.isBrowser) return;
 
-    const page = this.usersPage();
-    const limit = this.usersLimit();
+    const page   = this.usersPage();
+    const limit  = this.usersLimit();
     const nombre = this.filtroNombre().trim();
-    const rol = this.filtroRol().trim();
+    const rol    = this.filtroRol().trim();
 
-    let params: any = { page, per_page: limit + 1 }; // lookahead
-
+    let params: any = { page, per_page: limit + 1 }; // cambia a 'limit' si tu API lo requiere
     if (nombre) params.nombre = nombre;
-    if (rol) params.rol = rol;
+    if (rol)    params.rol = rol;
 
     this.http.get<Usuario[]>(`${this.apiUrl}/usuarios`, { headers: this.getAuthHeaders(), params })
       .subscribe({
@@ -103,19 +97,132 @@ export class AdminDataService {
       });
   }
 
-  // --- FUNCIÓN CORREGIDA ---
   updateUserRole(userId: number, newRole: string): Observable<any> | undefined {
     if (!this.isBrowser) {
       return new Observable((subscriber: Subscriber<any>) => {
         subscriber.error('No es posible actualizar el rol en server-side rendering');
       });
     }
-    return this.http.put(`${this.apiUrl}/usuario/${userId}`, { rol: newRole }, { headers: this.getAuthHeaders() });
+    return this.http.put(`${this.apiUrl}/usuario/${userId}`, { rol: newRole }, { headers: this.jsonAuthHeaders() });
   }
 
-  // ---------------------------
-  //  PERSISTENCIA LOCAL (stock, etc.) — sin cambios estructurales
-  // ---------------------------
+  // ======== EMPLEADOS (usando /usuarios) ========
+
+  /** Genera una contraseña temporal fuerte (8-10 chars, mezcla de tipos). */
+  private genTempPassword(): string {
+    const base = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    // Aseguramos mezcla mínima
+    return `Emp-${base.slice(0,6)}!${Math.floor(Math.random()*10)}`;
+  }
+
+  /** GET /usuarios?rol=empleado */
+  fetchEmpleados(): void {
+    const params = { rol: 'empleado' };
+    this.http.get<Empleado[]>(`${this.apiUrl}/usuarios`, { headers: this.getAuthHeaders(), params })
+      .subscribe({
+        next: (rows) => this.empleados.set(Array.isArray(rows) ? rows : []),
+        error: (err) => {
+          console.error('Error al obtener empleados (desde /usuarios):', err);
+          this.empleados.set([]);
+        }
+      });
+  }
+
+  /**
+   * POST /usuarios
+   * El backend requiere 'contraseña' → enviamos una contraseña temporal
+   * porque el modal de empleados no la solicita (cambio mínimo).
+   */
+  addEmpleado = (emp: Empleado) => {
+    const tempPwd = this.genTempPassword();
+    const body: any = { nombre: emp.nombre, rol: emp.rol || 'empleado', 'contraseña': tempPwd };
+
+    this.http.post<Empleado | any>(`${this.apiUrl}/usuarios`, body, { headers: this.jsonAuthHeaders(), observe: 'response' })
+      .subscribe({
+        next: (resp) => {
+          const nuevo = resp.body as Empleado | undefined;
+          if (nuevo && (nuevo.id !== undefined && nuevo.id !== null)) {
+            this.empleados.update(list => [ ...(list ?? []), nuevo ]);
+          } else {
+            this.fetchEmpleados(); // por si el backend devuelve 201 sin body
+          }
+          alert(`Empleado creado.\nContraseña temporal: ${tempPwd}`);
+        },
+        error: (err) => {
+          console.error('POST /usuarios (alta empleado) falló:', err);
+          const status = err?.status;
+          const backendMsg = (typeof err?.error === 'string') ? err.error
+                           : (err?.error?.message ?? err?.error?.detail ?? JSON.stringify(err?.error));
+          alert(`No se pudo crear el empleado (backend).
+Status: ${status ?? 'desconocido'}
+Mensaje: ${backendMsg ?? 'sin detalle'}
+Ruta: POST ${this.apiUrl}/usuarios`);
+        }
+      });
+  };
+
+  /** PUT /usuario/:id */
+  updateEmpleado = (index: number, emp: Empleado) => {
+    const current = this.empleados();
+    const target = current?.[index];
+    if (!target || !target.id) {
+      console.warn('No se encontró el empleado o no tiene id para actualizar.');
+      return;
+    }
+
+    const body = { nombre: emp.nombre, rol: emp.rol };
+    this.http.put<Empleado | any>(`${this.apiUrl}/usuario/${target.id}`, body, { headers: this.jsonAuthHeaders(), observe: 'response' })
+      .subscribe({
+        next: (resp) => {
+          const actualizado = (resp.body as Empleado) ?? { ...target, ...body };
+          this.empleados.update(list => {
+            const copy = [...(list ?? [])];
+            copy[index] = { ...copy[index], ...actualizado };
+            return copy;
+          });
+        },
+        error: (err) => {
+          console.error('PUT /usuario/:id (empleado) falló:', err);
+          const status = err?.status;
+          const backendMsg = (typeof err?.error === 'string') ? err.error
+                           : (err?.error?.message ?? err?.error?.detail ?? JSON.stringify(err?.error));
+          alert(`No se pudo actualizar el empleado (backend).
+Status: ${status ?? 'desconocido'}
+Mensaje: ${backendMsg ?? 'sin detalle'}
+Ruta: PUT ${this.apiUrl}/usuario/${target.id}`);
+        }
+      });
+  };
+
+  /** DELETE /usuario/:id */
+  deleteEmpleado = (index: number) => {
+    const current = this.empleados();
+    const target = current?.[index];
+    if (!target || !target.id) {
+      console.warn('No se encontró el empleado o no tiene id para borrar.');
+      return;
+    }
+
+    this.http.delete(`${this.apiUrl}/usuario/${target.id}`, { headers: this.getAuthHeaders(), observe: 'response' })
+      .subscribe({
+        next: () => {
+          this.empleados.update(list => list.filter((_, i) => i !== index));
+        },
+        error: (err) => {
+          console.error('DELETE /usuario/:id (empleado) falló:', err);
+          const status = err?.status;
+          const backendMsg = (typeof err?.error === 'string') ? err.error
+                           : (err?.error?.message ?? err?.error?.detail ?? JSON.stringify(err?.error));
+          alert(`No se pudo eliminar el empleado (backend).
+Status: ${status ?? 'desconocido'}
+Mensaje: ${backendMsg ?? 'sin detalle'}
+Ruta: DELETE ${this.apiUrl}/usuario/${target.id}`);
+        }
+      });
+  };
+
+  // ======== Persistencia local (sin cambios estructurales) ========
+
   private loadState(): void {
     if (!this.isBrowser) return;
     const saved = localStorage.getItem(LS_KEY);
@@ -123,13 +230,12 @@ export class AdminDataService {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed.productos)) this.productos.set(parsed.productos);
-        if (Array.isArray(parsed.clientes)) this.clientes.set(parsed.clientes);
+        if (Array.isArray(parsed.clientes))  this.clientes.set(parsed.clientes);
         if (Array.isArray(parsed.empleados)) this.empleados.set(parsed.empleados);
-        if (Array.isArray(parsed.pedidos)) this.pedidos.set(parsed.pedidos);
-        if (Array.isArray(parsed.resenas)) this.resenas.set(parsed.resenas);
+        if (Array.isArray(parsed.pedidos))   this.pedidos.set(parsed.pedidos);
+        if (Array.isArray(parsed.resenas))   this.resenas.set(parsed.resenas);
       } catch (e) { console.warn('No se pudo cargar LS:', e); }
     } else {
-      // Seed mínimo
       this.productos.set(this.defaultState.productos);
     }
   }
@@ -138,17 +244,20 @@ export class AdminDataService {
     if (!this.isBrowser) return;
     const currentState = {
       productos: this.productos(),
-      clientes: this.clientes(),
+      clientes:  this.clientes(),
       empleados: this.empleados(),
-      pedidos: this.pedidos(),
-      resenas: this.resenas()
+      pedidos:   this.pedidos(),
+      resenas:   this.resenas()
     };
     localStorage.setItem(LS_KEY, JSON.stringify(currentState));
   }
 
+  // ======== Stock / Clientes / Pedidos / Reseñas (local) ========
+
   addProducto = (prod: Producto) => this.productos.update(p => [...p, prod]);
   updateProducto = (index: number, prod: Producto) => this.productos.update(p => { p[index] = prod; return [...p]; });
   deleteProducto = (index: number) => this.productos.update(p => p.filter((_, i) => i !== index));
+
   incrementarCantidad = (index: number) => this.productos.update(p => { p[index].cantidad++; return [...p]; });
   decrementarCantidad = (index: number) => this.productos.update(p => { p[index].cantidad = Math.max(0, p[index].cantidad - 1); return [...p]; });
 
@@ -156,16 +265,13 @@ export class AdminDataService {
   updateCliente = (index: number, cli: Cliente) => this.clientes.update(c => { c[index] = cli; return [...c]; });
   deleteCliente = (index: number) => this.clientes.update(c => c.filter((_, i) => i !== index));
 
-  addEmpleado = (emp: Empleado) => this.empleados.update(e => [...e, emp]);
-  updateEmpleado = (index: number, emp: Empleado) => this.empleados.update(e => { e[index] = emp; return [...e]; });
-  deleteEmpleado = (index: number) => this.empleados.update(e => e.filter((_, i) => i !== index));
-
   updateEstadoPedido = (index: number, nuevoEstado: string) => this.pedidos.update(p => { p[index].estado = nuevoEstado; return [...p]; });
   addResena = (resena: Resena) => this.resenas.update(r => [resena, ...r]);
 
-  // --- Helpers de paginación y filtros (llamados desde el componente) ---
+  // ======== Usuarios: helpers de paginación/filtros ========
+
   setNombreFiltro(valor: string) { this.filtroNombre.set(valor ?? ''); }
-  setRolFiltro(valor: string) { this.filtroRol.set(valor ?? ''); }
+  setRolFiltro(valor: string)    { this.filtroRol.set(valor ?? ''); }
 
   setLimit(valor: number) {
     const v = Number(valor) || 10;
