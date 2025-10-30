@@ -8,7 +8,7 @@ class ProductoModel(db.Model):
     descripcion = db.Column(db.String(255))
     precio = db.Column(db.Float, nullable=False)
     categoria = db.Column(db.String(255), nullable=False)
-    stock = db.Column(db.Integer, nullable=False)
+    cantidad = db.Column(db.Integer, nullable=False)
 
     def to_json(self):
         return {
@@ -17,15 +17,15 @@ class ProductoModel(db.Model):
             "descripcion": self.descripcion,
             "precio": self.precio,
             "categoria" : self.categoria,
-            "stock": self.stock
+            "cantidad": self.cantidad
         }
 
     def from_json(self, data):
         self.nombre = data.get("nombre", self.nombre)
         self.descripcion = data.get("descripcion", self.descripcion)
         self.precio = data.get("precio", self.precio)
-        self.categoria = data.get('precio', self.categoria)
-        self.stock = data.get("stock", self.stock)
-    
+        self.categoria = data.get('categoria', self.categoria)
+        self.cantidad = data.get("cantidad", self.cantidad)
+
     detalle_pedido = db.relationship("DetallePedidoModel", back_populates="producto", cascade="all, delete-orphan")
     valoraciones = db.relationship("ValoracionModel", back_populates="producto", cascade="all, delete-orphan")

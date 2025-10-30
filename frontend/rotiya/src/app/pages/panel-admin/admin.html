@@ -23,19 +23,64 @@
     <main class="col-md-9 col-lg-10 p-4">
       @switch (currentPage) {
 
+        <!-- ==================== STOCK ==================== -->
         @case ('stock') {
           <section>
             <div class="d-flex align-items-center justify-content-between mb-3">
-              <h3 class="mb-0">Stock</h3>
-              <button class="btn btn-primary" (click)="openProductoModal()"><i class="bi bi-plus-lg me-1"></i> Añadir producto</button>
+              <div>
+                <h3 class="mb-0">Stock</h3>
+                <small class="text-muted">Paginación y filtros contra /productos</small>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <label class="me-1 small text-muted">Items/pág.</label>
+                <select class="form-select form-select-sm" [ngModel]="prodLimit()" (ngModelChange)="onProdChangeLimit($event)" style="width:auto;">
+                  <option [ngValue]="5">5</option>
+                  <option [ngValue]="10">10</option>
+                  <option [ngValue]="20">20</option>
+                  <option [ngValue]="50">50</option>
+                </select>
+                <button class="btn btn-primary" (click)="openProductoModal()"><i class="bi bi-plus-lg me-1"></i> Añadir producto</button>
+              </div>
             </div>
+
+            <!-- Filtros Backend (Productos) -->
+            <form class="row g-2 align-items-end mb-3" (submit)="$event.preventDefault(); onProdAplicarFiltros()">
+              <div class="col-sm-6 col-md-4">
+                <label for="prodFiltroNombre" class="form-label">Por nombre</label>
+                <input id="prodFiltroNombre" type="text" class="form-control" placeholder="Ej: Empanada"
+                       [ngModel]="prodFiltroNombre()" (ngModelChange)="onProdSetNombre($event)" name="prodFiltroNombre"
+                       (keyup.enter)="onProdAplicarFiltros()">
+              </div>
+              <div class="col-sm-6 col-md-4">
+                <label for="prodFiltroCategoria" class="form-label">Por categoría</label>
+                <select id="prodFiltroCategoria" class="form-select"
+                        [ngModel]="prodFiltroCategoria()" (ngModelChange)="onProdSetCategoria($event)" name="prodFiltroCategoria">
+                  <option value="">(Todas)</option>
+                  <option value="Entrada">Entrada</option>
+                  <option value="Plato principal">Plato principal</option>
+                  <option value="Postres">Postres</option>
+                  <option value="Bebidas">Bebidas</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-4 d-flex gap-2">
+                <button type="button" class="btn btn-primary" (click)="onProdAplicarFiltros()">Aplicar</button>
+                <button type="button" class="btn btn-outline-secondary" (click)="onProdLimpiarFiltros()">Limpiar</button>
+              </div>
+            </form>
+
             <div class="table-responsive">
               <table class="table table-striped align-middle">
                 <thead>
-                  <tr><th>Producto</th><th>Categoría</th><th class="text-end">Precio ($)</th><th class="text-center">Cantidad</th><th class="text-end">Acciones</th></tr>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th class="text-end">Precio ($)</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-end">Acciones</th>
+                  </tr>
                 </thead>
                 <tbody>
-                  @for (prod of productos(); track prod.nombre; let i = $index) {
+                  @for (prod of productos(); track prod.id ?? prod.nombre; let i = $index) {
                     <tr>
                       <td>{{ prod.nombre }}</td>
                       <td>{{ prod.categoria }}</td>
@@ -53,15 +98,29 @@
                       </td>
                     </tr>
                   } @empty {
-                    <tr><td colspan="5" class="text-center text-muted">No hay productos en el stock.</td></tr>
+                    <tr><td colspan="5" class="text-center text-muted">No hay productos.</td></tr>
                   }
                 </tbody>
               </table>
             </div>
+
+            <!-- Paginador Productos -->
+            <div class="d-flex justify-content-center align-items-center gap-2 my-2">
+              <button class="btn btn-outline-secondary btn-sm" (click)="onProdPrev()" [disabled]="prodPage() === 1">Anterior</button>
+
+              <div class="btn-group">
+                <button class="btn btn-sm btn-primary" disabled>{{ prodPage() }}</button>
+                <button *ngIf="prodHasNext()" class="btn btn-outline-secondary btn-sm" (click)="onProdGoToPage(prodPage() + 1)">{{ prodPage() + 1 }}</button>
+              </div>
+
+              <button class="btn btn-outline-secondary btn-sm" (click)="onProdNext()" [disabled]="!prodHasNext()">Siguiente</button>
+            </div>
+
+            <div class="text-center text-muted small">Página {{ prodPage() }}</div>
           </section>
         }
 
-        <!-- USUARIOS: edición inline (nombre, correo) + cambio de rol -->
+        <!-- ==================== USUARIOS ==================== -->
         @case ('usuarios') {
           <section>
             <div class="d-flex align-items-center justify-content-between mb-3">
@@ -80,7 +139,7 @@
               </div>
             </div>
 
-            <!-- Filtros Backend -->
+            <!-- Filtros Backend (Usuarios) -->
             <form class="row g-2 align-items-end mb-3" (submit)="$event.preventDefault(); onAplicarFiltros()">
               <div class="col-sm-6 col-md-4">
                 <label for="filtroNombre" class="form-label">Por nombre</label>
@@ -115,29 +174,12 @@
                   @for (user of allUsers(); track user.id) {
                     <tr>
                       <td>{{ user.id }}</td>
-
-                      <!-- Nombre editable -->
                       <td>
-                        <input
-                          class="form-control form-control-sm"
-                          [ngModel]="user.nombre"
-                          (ngModelChange)="onUserUpdate(user, 'nombre', $event)"
-                          placeholder="Nombre"
-                        />
+                        <input class="form-control form-control-sm" [ngModel]="user.nombre" (ngModelChange)="onUserUpdate(user, 'nombre', $event)" placeholder="Nombre" />
                       </td>
-
-                      <!-- Correo editable -->
                       <td>
-                        <input
-                          type="email"
-                          class="form-control form-control-sm"
-                          [ngModel]="user.correo"
-                          (ngModelChange)="onUserUpdate(user, 'correo', $event)"
-                          placeholder="correo@ejemplo.com"
-                        />
+                        <input type="email" class="form-control form-control-sm" [ngModel]="user.correo" (ngModelChange)="onUserUpdate(user, 'correo', $event)" placeholder="correo@ejemplo.com" />
                       </td>
-
-                      <!-- Rol -->
                       <td class="text-end">
                         <select class="form-select form-select-sm w-auto d-inline-block"
                                 [value]="user.rol"
@@ -155,15 +197,12 @@
               </table>
             </div>
 
-            <!-- Paginador -->
             <div class="d-flex justify-content-center align-items-center gap-2 my-2">
               <button class="btn btn-outline-secondary btn-sm" (click)="onPrev()" [disabled]="usersPage() === 1">Anterior</button>
-
               <div class="btn-group">
                 <button class="btn btn-sm btn-primary" disabled>{{ usersPage() }}</button>
                 <button *ngIf="usersHasNext()" class="btn btn-outline-secondary btn-sm" (click)="onGoToPage(usersPage() + 1)">{{ usersPage() + 1 }}</button>
               </div>
-
               <button class="btn btn-outline-secondary btn-sm" (click)="onNext()" [disabled]="!usersHasNext()">Siguiente</button>
             </div>
 
@@ -171,6 +210,7 @@
           </section>
         }
 
+        <!-- ==================== PEDIDOS ==================== -->
         @case ('pedidos') {
           <section>
             <div class="d-flex align-items-center justify-content-between mb-3">
@@ -204,6 +244,7 @@
           </section>
         }
 
+        <!-- ==================== EMPLEADOS ==================== -->
         @case ('empleados') {
           <section>
             <div class="d-flex align-items-center justify-content-between mb-3">

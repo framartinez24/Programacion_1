@@ -35,6 +35,13 @@ export class Admin implements OnInit, AfterViewInit {
   filtroNombre = this.dataService.filtroNombre;
   filtroRol    = this.dataService.filtroRol;
 
+  // Productos (paginación + filtros) – NUEVO
+  prodPage     = this.dataService.prodPage;
+  prodLimit    = this.dataService.prodLimit;
+  prodHasNext  = this.dataService.prodHasNext;
+  prodFiltroNombre    = this.dataService.prodFiltroNombre;
+  prodFiltroCategoria = this.dataService.prodFiltroCategoria;
+
   currentPage: AdminPage = 'stock';
 
   // Estados de edición (modales)
@@ -57,7 +64,9 @@ export class Admin implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    // Al cargar, traemos usuarios (como tenías) y productos para stock
     this.dataService.fetchAllUsers();
+    this.dataService.fetchProductos();
   }
 
   ngAfterViewInit(): void {
@@ -72,11 +81,12 @@ export class Admin implements OnInit, AfterViewInit {
     this.currentPage = page;
     if (page === 'usuarios')  this.dataService.fetchAllUsers();
     if (page === 'empleados') this.dataService.fetchEmpleados();
+    if (page === 'stock')     this.dataService.fetchProductos();
   }
 
   logout(): void { this.authService.logout(); }
 
-  // STOCK (mínimos)
+  // ===== STOCK (modales + acciones) =====
   openProductoModal(index?: number): void {
     if (!this.isBrowser) return;
     if (index === undefined || index === null) {
@@ -88,6 +98,7 @@ export class Admin implements OnInit, AfterViewInit {
     }
     this.productoModal?.show();
   }
+
   saveProducto(form: NgForm): void {
     if (form.invalid) return;
     if (this.editingProductoIndex === null) {
@@ -98,11 +109,12 @@ export class Admin implements OnInit, AfterViewInit {
     this.productoModal?.hide();
     form.resetForm();
   }
+
   onIncrementarCantidad(i: number): void { this.dataService.incrementarCantidad(i); }
   onDecrementarCantidad(i: number): void { this.dataService.decrementarCantidad(i); }
   onDeleteProducto(i: number): void     { this.dataService.deleteProducto(i); }
 
-  // CLIENTES (mínimos)
+  // ===== CLIENTES (mínimos) =====
   openClienteModal(index?: number): void {
     if (!this.isBrowser) return;
     if (index === undefined || index === null) {
@@ -114,18 +126,19 @@ export class Admin implements OnInit, AfterViewInit {
     }
     this.clienteModal?.show();
   }
+
   saveCliente(form: NgForm): void {
     if (form.invalid) return;
     if (this.editingClienteIndex === null) {
-      this.dataService.addCliente(this.editingCliente as Cliente);
+      this.dataService.addCliente(this.editingCliente as any);
     } else {
-      this.dataService.updateCliente(this.editingClienteIndex, this.editingCliente as Cliente);
+      this.dataService.updateCliente(this.editingClienteIndex, this.editingCliente as any);
     }
     this.clienteModal?.hide();
     form.resetForm();
   }
 
-  // EMPLEADOS
+  // ===== EMPLEADOS =====
   openEmpleadoModal(index?: number): void {
     if (!this.isBrowser) return;
     if (index === undefined || index === null) {
@@ -137,6 +150,7 @@ export class Admin implements OnInit, AfterViewInit {
     }
     this.empleadoModal?.show();
   }
+
   saveEmpleado(form: NgForm): void {
     if (form.invalid) return;
     if (this.editingEmpleadoIndex === null) {
@@ -147,16 +161,17 @@ export class Admin implements OnInit, AfterViewInit {
     this.empleadoModal?.hide();
     form.resetForm();
   }
+
   onDeleteEmpleado(index: number): void { this.dataService.deleteEmpleado(index); }
 
-  // PEDIDOS
+  // ===== PEDIDOS =====
   onEstadoPedidoChange(event: Event, index: number): void {
     const select = event.target as HTMLSelectElement;
     const nuevo = select.value;
     this.dataService.updateEstadoPedido(index, nuevo);
   }
 
-  // USUARIOS: rol + edición inline (nombre, correo)
+  // ===== USUARIOS: rol + edición inline =====
   onRoleChange(user: Usuario, event: Event): void {
     const select = event.target as HTMLSelectElement;
     const newRole = select.value;
@@ -177,7 +192,6 @@ export class Admin implements OnInit, AfterViewInit {
     }
   }
 
-  /** Actualiza un campo del usuario (nombre o correo) cuando cambia el input. */
   onUserUpdate(user: Usuario, field: 'nombre' | 'correo', value: string): void {
     const patch: any = {};
     patch[field] = (value ?? '').trim();
@@ -185,7 +199,6 @@ export class Admin implements OnInit, AfterViewInit {
     if (obs) {
       obs.subscribe({
         next: (updated) => {
-          // Sincronizamos por si el backend normaliza
           user.nombre = updated.nombre;
           user.correo = updated.correo;
           user.rol    = updated.rol;
@@ -198,7 +211,7 @@ export class Admin implements OnInit, AfterViewInit {
     }
   }
 
-  // Paginación y filtros (usuarios)
+  // ===== Paginación y filtros (Usuarios) =====
   onChangeLimit(v: number): void { this.dataService.setLimit(Number(v)); }
   onPrev(): void { this.dataService.prevPage(); }
   onNext(): void { this.dataService.nextPage(); }
@@ -207,4 +220,14 @@ export class Admin implements OnInit, AfterViewInit {
   onSetRol(v: string): void    { this.dataService.setRolFiltro(v); }
   onAplicarFiltros(): void     { this.dataService.aplicarFiltros(); }
   onLimpiarFiltros(): void     { this.dataService.limpiarFiltros(); }
+
+  // ===== Paginación y filtros (Productos) – NUEVO =====
+  onProdChangeLimit(v: number): void { this.dataService.setProdLimit(Number(v)); }
+  onProdPrev(): void { this.dataService.prevProdPage(); }
+  onProdNext(): void { this.dataService.nextProdPage(); }
+  onProdGoToPage(p: number): void { this.dataService.goToProdPage(p); }
+  onProdSetNombre(v: string): void { this.dataService.setProdNombreFiltro(v); }
+  onProdSetCategoria(v: string): void { this.dataService.setProdCategoriaFiltro(v); }
+  onProdAplicarFiltros(): void { this.dataService.aplicarProdFiltros(); }
+  onProdLimpiarFiltros(): void { this.dataService.limpiarProdFiltros(); }
 }
