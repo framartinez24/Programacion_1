@@ -6,7 +6,15 @@ import { AuthService } from '../../shared/auth';
 import { Observable, Subscriber } from 'rxjs';
 
 // ▲ Producto ahora con id opcional para mapear con DB/app.db
-export interface Producto { id?: number; nombre: string; categoria: string; precio: number; cantidad: number; descripcion: string; img: string; }
+export interface Producto {
+  id?: number;
+  nombre: string;
+  categoria: string;
+  precio: number;
+  cantidad: number;
+  descripcion: string;
+  img: string;
+}
 export interface Cliente  { nombre: string; email: string; telefono: string; }
 export interface Empleado { id?: number; nombre: string; rol: string; }
 export interface Pedido   { fecha: string; cliente: string; detalle: string; total: number; estado: string; }
@@ -39,9 +47,7 @@ export class AdminDataService {
   };
 
   // ===== Signals compartidos =====
-  // Stock
-  productos = signal<Producto[]>([]);
-  // Usuarios/otros
+  productos = signal<Producto[]>([]); // stock
   clientes  = signal<Cliente[]>([]);
   empleados = signal<Empleado[]>([]);
   pedidos   = signal<Pedido[]>([]);
@@ -60,8 +66,8 @@ export class AdminDataService {
   prodPage     = signal<number>(1);
   prodLimit    = signal<number>(10);
   prodHasNext  = signal<boolean>(false);
-  prodFiltroNombre   = signal<string>('');
-  prodFiltroCategoria= signal<string>('');
+  prodFiltroNombre    = signal<string>('');
+  prodFiltroCategoria = signal<string>('');
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -71,6 +77,9 @@ export class AdminDataService {
     }
   }
 
+  // =========================================
+  // ============== HEADERS ==================
+  // =========================================
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('access_token');
     return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
@@ -81,6 +90,46 @@ export class AdminDataService {
     const base: Record<string,string> = { 'Content-Type': 'application/json' };
     if (token) base['Authorization'] = `Bearer ${token}`;
     return new HttpHeaders(base);
+  }
+
+  // ============================================================
+  // 🚀 NUEVO: traer productos SIEMPRE del backend (para /menu)
+  // ============================================================
+  /**
+   * GET /productos
+   * - page/per_page para traer muchos de una
+   * - categoria opcional
+   * - normaliza 'stock' -> 'cantidad'
+   */
+  fetchProductosFromBackend(page: number = 1, per_page: number = 200, categoria: string = ''): void {
+    const params: any = { page, per_page };
+    if (categoria) params.categoria = categoria;
+
+    this.http.get<any>(`${this.apiUrl}/productos`, {
+      headers: this.getAuthHeaders(),
+      params
+    }).subscribe({
+      next: (resp) => {
+        // tu backend puede mandar [{...}] o {items:[...]}
+        const items = Array.isArray(resp) ? resp : resp.items ?? [];
+        const normalizados: Producto[] = items.map((p: any) => ({
+          id: p.id,
+          nombre: p.nombre,
+          descripcion: p.descripcion,
+          precio: Number(p.precio ?? 0),
+          categoria: p.categoria,
+          // 👇 acá arreglamos la diferencia DB vs front
+          cantidad: Number(p.cantidad ?? p.stock ?? 0),
+          img: p.img ?? p.imagen ?? ''
+        }));
+        this.productos.set(normalizados);
+        this.saveState();
+      },
+      error: (err) => {
+        console.error('Error al obtener /productos del backend:', err);
+        // si falla, dejamos lo que haya en localStorage
+      }
+    });
   }
 
   // =========================================================================
@@ -299,7 +348,7 @@ Ruta: DELETE ${this.apiUrl}/usuario/${target.id}`);
       });
   };
 
-  /** Update de producto: PUT /producto/:id (busca id por índice si no viene). */
+  /** Update de producto: PUT /producto/:id */
   updateProducto = (index: number, prod: Producto) => {
     const current = this.productos();
     const target  = current?.[index];
@@ -522,8 +571,6 @@ Ruta: DELETE ${this.apiUrl}/usuario/${target.id}`);
 
   // ===========================================================
   // === Compatibilidad con otras pantallas (local, sin DB) ===
-  // === addResena / clientes / pedidos usados en menu.ts,   ===
-  // === admin.ts y panel-empleado.ts                         ===
   // ===========================================================
   addResena = (resena: Resena) =>
     this.resenas.update(r => [resena, ...r]);

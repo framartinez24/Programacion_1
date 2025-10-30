@@ -1,19 +1,24 @@
 <div class="container my-3">
-  
+  <!-- NAV CATEGORÍAS -->
   <nav class="category-nav">
     <button class="category-item" (click)="changePage('principales')" [class.active]="currentPage() === 'principales'">Platos Principales</button>
-    <button class="category-item" (click)="changePage('entradas')" [class.active]="currentPage() === 'entradas'">Entradas</button>
-    <button class="category-item" (click)="changePage('postres')" [class.active]="currentPage() === 'postres'">Postres</button>
-    <button class="category-item" (click)="changePage('bebidas')" [class.active]="currentPage() === 'bebidas'">Bebidas</button>
+    <button class="category-item" (click)="changePage('entradas')"    [class.active]="currentPage() === 'entradas'">Entradas</button>
+    <button class="category-item" (click)="changePage('postres')"     [class.active]="currentPage() === 'postres'">Postres</button>
+    <button class="category-item" (click)="changePage('bebidas')"     [class.active]="currentPage() === 'bebidas'">Bebidas</button>
   </nav>
 
   <div class="mt-4">
+    <!-- loader simple -->
+    <div *ngIf="isLoadingProductos" class="text-center text-muted my-4">
+      Cargando productos desde la base de datos...
+    </div>
+
     @switch (currentPage()) {
 
       @case ('principales') {
         <h2 class="mb-4 text-center brand-text">Platos Principales</h2>
         <div class="row g-4">
-          @for (producto of productosPrincipales(); track producto.nombre) {
+          @for (producto of productosPrincipales(); track producto.id ?? producto.nombre) {
             <div class="col-md-4">
               <div class="card h-100 shadow-sm">
                 <img [src]="producto.img" class="card-img-top" [alt]="producto.nombre" style="height: 200px; object-fit: cover;">
@@ -27,14 +32,16 @@
                 </div>
               </div>
             </div>
+          } @empty {
+            <p class="text-center text-muted">No hay platos principales para mostrar.</p>
           }
         </div>
       }
-      
+
       @case ('entradas') {
         <h2 class="mb-4 text-center brand-text">Entradas</h2>
         <div class="row g-4">
-          @for (producto of entradas(); track producto.nombre) {
+          @for (producto of entradas(); track producto.id ?? producto.nombre) {
             <div class="col-md-4">
               <div class="card h-100 shadow-sm">
                 <img [src]="producto.img" class="card-img-top" [alt]="producto.nombre" style="height: 200px; object-fit: cover;">
@@ -48,14 +55,16 @@
                 </div>
               </div>
             </div>
+          } @empty {
+            <p class="text-center text-muted">No hay entradas para mostrar.</p>
           }
         </div>
       }
-      
+
       @case ('postres') {
         <h2 class="mb-4 text-center brand-text">Postres</h2>
         <div class="row g-4">
-          @for (producto of postres(); track producto.nombre) {
+          @for (producto of postres(); track producto.id ?? producto.nombre) {
             <div class="col-md-4">
               <div class="card h-100 shadow-sm">
                 <img [src]="producto.img" class="card-img-top" [alt]="producto.nombre" style="height: 200px; object-fit: cover;">
@@ -69,6 +78,8 @@
                 </div>
               </div>
             </div>
+          } @empty {
+            <p class="text-center text-muted">No hay postres para mostrar.</p>
           }
         </div>
       }
@@ -76,7 +87,7 @@
       @case ('bebidas') {
         <h2 class="mb-4 text-center brand-text">Bebidas</h2>
         <div class="row g-4">
-          @for (producto of bebidas(); track producto.nombre) {
+          @for (producto of bebidas(); track producto.id ?? producto.nombre) {
             <div class="col-md-4">
               <div class="card h-100 shadow-sm">
                 <img [src]="producto.img" class="card-img-top" [alt]="producto.nombre" style="height: 200px; object-fit: cover;">
@@ -90,29 +101,30 @@
                 </div>
               </div>
             </div>
+          } @empty {
+            <p class="text-center text-muted">No hay bebidas para mostrar.</p>
           }
         </div>
       }
-      
+
       @case ('resenas') {
+        <!-- tu sección de reseñas tal cual la tenías -->
         <div>
           <h2 class="mb-4 text-center brand-text">Reseñas de Clientes</h2>
-          
+
           <div class="card mb-5 shadow-sm">
             <div class="card-body">
               <h5 class="card-title">Deja tu opinión</h5>
               <form #resenaForm="ngForm" (ngSubmit)="submitResena(resenaForm)">
-                
                 <div class="mb-3">
                   <label for="resenaProducto" class="form-label">¿Sobre qué producto quieres opinar?</label>
                   <select id="resenaProducto" name="resenaProducto" class="form-select" [(ngModel)]="newResena.productoNombre" required>
                     <option value="" disabled>Selecciona un producto...</option>
-                    @for (producto of todosLosProductos(); track producto.nombre) {
+                    @for (producto of todosLosProductos(); track producto.id ?? producto.nombre) {
                       <option [value]="producto.nombre">{{ producto.nombre }}</option>
                     }
                   </select>
                 </div>
-                
                 <div class="mb-3">
                   <label for="resenaNombre" class="form-label">Tu nombre</label>
                   <input type="text" id="resenaNombre" name="resenaNombre" class="form-control" [(ngModel)]="newResena.nombre" required>

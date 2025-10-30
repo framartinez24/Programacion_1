@@ -1,31 +1,58 @@
 // src/app/services/admin-data.service.ts
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, Inject, PLATFORM_ID, signal } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
-// Interfaces (respetamos tu tipado previo y agregamos lo mínimo)
+// =========================
+// Interfaces
+// =========================
 export interface Usuario {
   id: number;
   nombre: string;
   correo: string;
   rol: string;
-  categoriaId?: number; // <- si tu backend lo manda; no rompe si no viene
+  categoriaId?: number;
+}
+
+export interface Producto {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  categoria: string;
+  cantidad: number;
+  img: string;
+}
+
+export interface Resena {
+  productoNombre: string;
+  nombre: string;
+  comentario: string;
+  calificacion: number;
+  fecha: string;
 }
 
 export interface PaginadoRespuesta<T> {
   items: T[];
-  total: number;   // total de ítems en el backend (no solo la página actual)
-  page: number;    // página actual (1-based)
-  limit: number;   // tamaño de página
+  total: number;
+  page: number;
+  limit: number;
 }
 
-// Si ya tenés un environment, usalo; sino, define una base (ajústala a tu API real)
-const API_BASE = '/api'; // p.ej. 'https://tu-backend.com/api'
+// =========================
+// Configuración
+// =========================
+const API_BASE = 'http://127.0.0.1:3535'; // ajustá si usás otro puerto o prefijo
 
 @Injectable({ providedIn: 'root' })
 export class AdminDataService {
   private readonly isBrowser: boolean;
+
+  // Signals reactivos
+  usuarios = signal<Usuario[]>([]);
+  productos = signal<Producto[]>([]);
+  resenas   = signal<Resena[]>([]);
 
   constructor(
     private http: HttpClient,
@@ -34,16 +61,21 @@ export class AdminDataService {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
-  /**
-   * Obtiene usuarios con paginación y filtros backend.
-   * @param page Página 1-based
-   * @param limit Tamaño de página
-   * @param nombre Filtro por nombre (param backend: 'nombre')
-   * @param categoriaId Filtro por categoría (param backend: 'categoriaId')
-   *
-   * Por qué: el backend espera 'page', 'limit', 'nombre', 'categoriaId' (según tu consigna).
-   * Cómo: construimos HttpParams sólo con valores definidos para no enviar basura.
-   */
+  // =========================
+  // 🔹 Autenticación básica (si usás token)
+  // =========================
+  private getAuthHeaders(): HttpHeaders {
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    if (this.isBrowser) {
+      const token = localStorage.getItem('token');
+      if (token) headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
+  }
+
+  // =========================
+  // 🔹 USUARIOS (backend paginado)
+  // =========================
   getUsuarios(
     page: number,
     limit: number,
@@ -54,22 +86,67 @@ export class AdminDataService {
       .set('page', String(page))
       .set('limit', String(limit));
 
-    if (nombre && nombre.trim().length > 0) {
-      params = params.set('nombre', nombre.trim());
-    }
-    if (categoriaId !== undefined && categoriaId !== null && String(categoriaId).trim() !== '') {
+    if (nombre && nombre.trim()) params = params.set('nombre', nombre.trim());
+    if (categoriaId !== undefined && categoriaId !== null && String(categoriaId).trim() !== '')
       params = params.set('categoriaId', String(categoriaId).trim());
-    }
 
-    // Endpoint: ajusta a tu ruta real (p.ej. `${API_BASE}/admin/usuarios`)
-    return this.http.get<PaginadoRespuesta<Usuario>>(`${API_BASE}/usuarios`, { params });
+    return this.http.get<PaginadoRespuesta<Usuario>>(`${API_BASE}/usuarios`, {
+      params,
+      headers: this.getAuthHeaders(),
+    });
   }
 
-  /**
-   * (Opcional) Si necesitás poblar el <select> de categorías desde backend.
-   * Mínima extensión, no obligatoria si ya tenés una lista local.
-   */
+  // =========================
+  // 🔹 PRODUCTOS (backend DB/app.db)
+  // =========================
+  fetchProductosFromBackend(
+    page: number = 1,
+    per_page: number = 200,
+    categoria: string = ''
+  ) {
+    const params: any = { page, per_page };
+    if (categoria) params.categoria = categoria;
+
+    return this.http
+      .get<any>(`${API_BASE}/productos`, {
+        headers: this.getAuthHeaders(),
+        params,
+      })
+      .pipe(
+        tap({
+          next: (resp) => {
+            const items = Array.isArray(resp)
+              ? resp
+              : resp.items ?? [];
+            this.productos.set(items);
+            console.log('✅ Productos cargados desde backend:', items.length);
+          },
+          error: (err) => {
+            console.error('❌ Error al traer productos del backend:', err);
+            this.productos.set([]);
+          },
+        })
+      )
+      .subscribe();
+  }
+
+  // =========================
+  // 🔹 RESEÑAS (solo frontend)
+  // =========================
+  addResena(resena: Resena): void {
+    const actuales = this.resenas();
+    this.resenas.set([...actuales, resena]);
+    if (this.isBrowser) {
+      localStorage.setItem('resenas', JSON.stringify(this.resenas()));
+    }
+  }
+
+  // =========================
+  // 🔹 CATEGORÍAS (opcional)
+  // =========================
   getCategorias(): Observable<Array<{ id: number; nombre: string }>> {
-    return this.http.get<Array<{ id: number; nombre: string }>>(`${API_BASE}/categorias`);
+    return this.http.get<Array<{ id: number; nombre: string }>>(
+      `${API_BASE}/categorias`
+    );
   }
 }
