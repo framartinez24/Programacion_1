@@ -40,6 +40,7 @@ export class AdminDataService {
   resenas   = signal<Resena[]>([]);
   allUsers  = signal<Usuario[]>([]);
 
+  // Usuarios: paginación + filtros
   usersPage    = signal<number>(1);
   usersLimit   = signal<number>(10);
   usersHasNext = signal<boolean>(false);
@@ -67,7 +68,7 @@ export class AdminDataService {
     return new HttpHeaders(base);
   }
 
-  // ======== USUARIOS (paginación + filtros) ========
+  // ========= USUARIOS (paginación + filtros) =========
 
   fetchAllUsers(): void {
     if (!this.isBrowser) return;
@@ -77,7 +78,8 @@ export class AdminDataService {
     const nombre = this.filtroNombre().trim();
     const rol    = this.filtroRol().trim();
 
-    let params: any = { page, per_page: limit + 1 }; // cambia a 'limit' si tu API lo requiere
+    // Usa 'per_page' con lookahead; cambia a 'limit' si tu API lo requiere.
+    const params: any = { page, per_page: limit + 1 };
     if (nombre) params.nombre = nombre;
     if (rol)    params.rol = rol;
 
@@ -86,8 +88,7 @@ export class AdminDataService {
         next: (items) => {
           const hasNext = Array.isArray(items) && items.length > limit;
           this.usersHasNext.set(hasNext);
-          const pageItems = hasNext ? items.slice(0, limit) : items;
-          this.allUsers.set(pageItems);
+          this.allUsers.set(hasNext ? items.slice(0, limit) : items);
         },
         error: (err) => {
           console.error('Error al obtener usuarios:', err);
@@ -97,6 +98,17 @@ export class AdminDataService {
       });
   }
 
+  /** Update genérico: PUT /usuario/:id con patch parcial (nombre, correo, rol, etc.) */
+  updateUsuario(userId: number, patch: Partial<Usuario>): Observable<Usuario> | undefined {
+    if (!this.isBrowser) {
+      return new Observable((subscriber: Subscriber<any>) => {
+        subscriber.error('No es posible actualizar usuario en server-side rendering');
+      }) as any;
+    }
+    return this.http.put<Usuario>(`${this.apiUrl}/usuario/${userId}`, patch, { headers: this.jsonAuthHeaders() });
+  }
+
+  /** Atajo específico para rol (compatibilidad con tu llamada existente). */
   updateUserRole(userId: number, newRole: string): Observable<any> | undefined {
     if (!this.isBrowser) {
       return new Observable((subscriber: Subscriber<any>) => {
@@ -106,12 +118,11 @@ export class AdminDataService {
     return this.http.put(`${this.apiUrl}/usuario/${userId}`, { rol: newRole }, { headers: this.jsonAuthHeaders() });
   }
 
-  // ======== EMPLEADOS (usando /usuarios) ========
+  // ========= EMPLEADOS (usa /usuarios y /usuario/:id) =========
 
-  /** Genera una contraseña temporal fuerte (8-10 chars, mezcla de tipos). */
+  /** Genera una contraseña temporal para alta de empleado (backend requiere 'contraseña'). */
   private genTempPassword(): string {
     const base = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-    // Aseguramos mezcla mínima
     return `Emp-${base.slice(0,6)}!${Math.floor(Math.random()*10)}`;
   }
 
@@ -128,11 +139,7 @@ export class AdminDataService {
       });
   }
 
-  /**
-   * POST /usuarios
-   * El backend requiere 'contraseña' → enviamos una contraseña temporal
-   * porque el modal de empleados no la solicita (cambio mínimo).
-   */
+  /** POST /usuarios — alta de empleado (envía 'contraseña' temporal). */
   addEmpleado = (emp: Empleado) => {
     const tempPwd = this.genTempPassword();
     const body: any = { nombre: emp.nombre, rol: emp.rol || 'empleado', 'contraseña': tempPwd };
@@ -144,7 +151,7 @@ export class AdminDataService {
           if (nuevo && (nuevo.id !== undefined && nuevo.id !== null)) {
             this.empleados.update(list => [ ...(list ?? []), nuevo ]);
           } else {
-            this.fetchEmpleados(); // por si el backend devuelve 201 sin body
+            this.fetchEmpleados();
           }
           alert(`Empleado creado.\nContraseña temporal: ${tempPwd}`);
         },
@@ -161,7 +168,7 @@ Ruta: POST ${this.apiUrl}/usuarios`);
       });
   };
 
-  /** PUT /usuario/:id */
+  /** PUT /usuario/:id — actualizar empleado (recibe índice por compatibilidad con la UI). */
   updateEmpleado = (index: number, emp: Empleado) => {
     const current = this.empleados();
     const target = current?.[index];
@@ -221,7 +228,7 @@ Ruta: DELETE ${this.apiUrl}/usuario/${target.id}`);
       });
   };
 
-  // ======== Persistencia local (sin cambios estructurales) ========
+  // ========= Persistencia local (stock/clientes/pedidos/resenas) =========
 
   private loadState(): void {
     if (!this.isBrowser) return;
@@ -252,7 +259,7 @@ Ruta: DELETE ${this.apiUrl}/usuario/${target.id}`);
     localStorage.setItem(LS_KEY, JSON.stringify(currentState));
   }
 
-  // ======== Stock / Clientes / Pedidos / Reseñas (local) ========
+  // ========= Métodos locales (stock/clientes/pedidos/resenas) =========
 
   addProducto = (prod: Producto) => this.productos.update(p => [...p, prod]);
   updateProducto = (index: number, prod: Producto) => this.productos.update(p => { p[index] = prod; return [...p]; });
@@ -268,7 +275,7 @@ Ruta: DELETE ${this.apiUrl}/usuario/${target.id}`);
   updateEstadoPedido = (index: number, nuevoEstado: string) => this.pedidos.update(p => { p[index].estado = nuevoEstado; return [...p]; });
   addResena = (resena: Resena) => this.resenas.update(r => [resena, ...r]);
 
-  // ======== Usuarios: helpers de paginación/filtros ========
+  // ========= Helpers usuarios: paginación/filtros =========
 
   setNombreFiltro(valor: string) { this.filtroNombre.set(valor ?? ''); }
   setRolFiltro(valor: string)    { this.filtroRol.set(valor ?? ''); }
@@ -278,7 +285,7 @@ Ruta: DELETE ${this.apiUrl}/usuario/${target.id}`);
     this.usersLimit.set(v);
     this.usersPage.set(1);
     this.fetchAllUsers();
-  }
+    }
 
   goToPage(p: number) {
     const page = Math.max(1, Math.floor(p));

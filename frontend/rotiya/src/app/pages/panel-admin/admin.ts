@@ -19,7 +19,7 @@ export class Admin implements OnInit, AfterViewInit {
   private authService = inject(AuthService);
   private isBrowser: boolean;
 
-  // Signals/estado que ya expone el servicio
+  // Signals del servicio
   productos = this.dataService.productos;
   clientes  = this.dataService.clientes;
   empleados = this.dataService.empleados;
@@ -35,10 +35,9 @@ export class Admin implements OnInit, AfterViewInit {
   filtroNombre = this.dataService.filtroNombre;
   filtroRol    = this.dataService.filtroRol;
 
-  // Navegación actual del panel
   currentPage: AdminPage = 'stock';
 
-  // Estados de edición (stock/clientes/empleados) — ya los usabas en tus modales
+  // Estados de edición (modales)
   editingProducto: Partial<Producto> = {};
   editingProductoIndex: number | null = null;
 
@@ -48,7 +47,7 @@ export class Admin implements OnInit, AfterViewInit {
   editingEmpleado: Partial<Empleado> = {};
   editingEmpleadoIndex: number | null = null;
 
-  // Instancias de modales Bootstrap
+  // Modales Bootstrap
   private productoModal: any;
   private clienteModal: any;
   private empleadoModal: any;
@@ -57,11 +56,7 @@ export class Admin implements OnInit, AfterViewInit {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
-  // -------------------------
-  //   Ciclo de vida
-  // -------------------------
   ngOnInit(): void {
-    // Cargar usuarios inicial (respetamos el nombre original del método)
     this.dataService.fetchAllUsers();
   }
 
@@ -72,25 +67,16 @@ export class Admin implements OnInit, AfterViewInit {
     if (document.getElementById('modalEmpleado')) this.empleadoModal = new bootstrap.Modal('#modalEmpleado');
   }
 
-  // -------------------------
-  //   Navegación del panel
-  // -------------------------
-  /** Firma exacta que espera el template: (click)="changePage('stock')" */
+  // Navegación
   changePage(page: AdminPage): void {
     this.currentPage = page;
-    // Si entramos a Usuarios, aseguramos datos frescos
-    if (page === 'usuarios') {
-      this.dataService.fetchAllUsers();
-    }
+    if (page === 'usuarios')  this.dataService.fetchAllUsers();
+    if (page === 'empleados') this.dataService.fetchEmpleados();
   }
 
-  logout(): void {
-    this.authService.logout(); // asumiendo que ya lo tenías implementado
-  }
+  logout(): void { this.authService.logout(); }
 
-  // -------------------------
-  //   STOCK (helpers mínimos)
-  // -------------------------
+  // STOCK (mínimos)
   openProductoModal(index?: number): void {
     if (!this.isBrowser) return;
     if (index === undefined || index === null) {
@@ -102,7 +88,6 @@ export class Admin implements OnInit, AfterViewInit {
     }
     this.productoModal?.show();
   }
-
   saveProducto(form: NgForm): void {
     if (form.invalid) return;
     if (this.editingProductoIndex === null) {
@@ -113,14 +98,11 @@ export class Admin implements OnInit, AfterViewInit {
     this.productoModal?.hide();
     form.resetForm();
   }
-
   onIncrementarCantidad(i: number): void { this.dataService.incrementarCantidad(i); }
   onDecrementarCantidad(i: number): void { this.dataService.decrementarCantidad(i); }
   onDeleteProducto(i: number): void     { this.dataService.deleteProducto(i); }
 
-  // -------------------------
-  //   CLIENTES (modales)
-  // -------------------------
+  // CLIENTES (mínimos)
   openClienteModal(index?: number): void {
     if (!this.isBrowser) return;
     if (index === undefined || index === null) {
@@ -132,8 +114,6 @@ export class Admin implements OnInit, AfterViewInit {
     }
     this.clienteModal?.show();
   }
-
-  /** Firma exacta usada en el template: (ngSubmit)="saveCliente(clienteForm)" */
   saveCliente(form: NgForm): void {
     if (form.invalid) return;
     if (this.editingClienteIndex === null) {
@@ -145,23 +125,18 @@ export class Admin implements OnInit, AfterViewInit {
     form.resetForm();
   }
 
-  // -------------------------
-  //   EMPLEADOS (modales)
-  // -------------------------
-  /** Firma exacta usada en el template: (click)="openEmpleadoModal()" y (click)="openEmpleadoModal(i)" */
+  // EMPLEADOS
   openEmpleadoModal(index?: number): void {
     if (!this.isBrowser) return;
     if (index === undefined || index === null) {
       this.editingEmpleadoIndex = null;
-      this.editingEmpleado = { nombre: '', rol: '' };
+      this.editingEmpleado = { nombre: '', rol: 'empleado' };
     } else {
       this.editingEmpleadoIndex = index;
       this.editingEmpleado = { ...this.empleados()[index] };
     }
     this.empleadoModal?.show();
   }
-
-  /** Firma exacta usada en el template: (ngSubmit)="saveEmpleado(empleadoForm)" */
   saveEmpleado(form: NgForm): void {
     if (form.invalid) return;
     if (this.editingEmpleadoIndex === null) {
@@ -172,59 +147,62 @@ export class Admin implements OnInit, AfterViewInit {
     this.empleadoModal?.hide();
     form.resetForm();
   }
+  onDeleteEmpleado(index: number): void { this.dataService.deleteEmpleado(index); }
 
-  /** Firma exacta usada en el template: (click)="onDeleteEmpleado(i)" */
-  onDeleteEmpleado(index: number): void {
-    this.dataService.deleteEmpleado(index);
-  }
-
-  // -------------------------
-  //   PEDIDOS
-  // -------------------------
-  /** Firma exacta usada en el template: (change)="onEstadoPedidoChange($event, i)" */
+  // PEDIDOS
   onEstadoPedidoChange(event: Event, index: number): void {
     const select = event.target as HTMLSelectElement;
     const nuevo = select.value;
     this.dataService.updateEstadoPedido(index, nuevo);
   }
 
-  // -------------------------
-  //   USUARIOS: rol, paginación, filtros
-  // -------------------------
-  /**
-   * Firma exacta usada en el template:
-   * (change)="onRoleChange(user, $event)"
-   */
+  // USUARIOS: rol + edición inline (nombre, correo)
   onRoleChange(user: Usuario, event: Event): void {
     const select = event.target as HTMLSelectElement;
     const newRole = select.value;
-
     if (!confirm(`¿Seguro que deseas cambiar el rol de ${user.nombre} a "${newRole}"?`)) {
-      // revierto visual si cancela
       select.value = user.rol;
       return;
     }
-
     const obs = this.dataService.updateUserRole(user.id, newRole);
     if (obs) {
       obs.subscribe({
         next: () => { user.rol = newRole; },
         error: (err) => {
           console.error('Error al actualizar el rol:', err);
-          alert('Error al actualizar el rol. Asegúrate de tener permisos de administrador.');
+          alert('Error al actualizar el rol.');
           select.value = user.rol;
         }
       });
     }
   }
 
-  // Paginación (firmas llamadas por el HTML)
+  /** Actualiza un campo del usuario (nombre o correo) cuando cambia el input. */
+  onUserUpdate(user: Usuario, field: 'nombre' | 'correo', value: string): void {
+    const patch: any = {};
+    patch[field] = (value ?? '').trim();
+    const obs = this.dataService.updateUsuario(user.id, patch);
+    if (obs) {
+      obs.subscribe({
+        next: (updated) => {
+          // Sincronizamos por si el backend normaliza
+          user.nombre = updated.nombre;
+          user.correo = updated.correo;
+          user.rol    = updated.rol;
+        },
+        error: (err) => {
+          console.error(`Error al actualizar ${field}:`, err);
+          alert(`No se pudo actualizar ${field}.`);
+        }
+      });
+    }
+  }
+
+  // Paginación y filtros (usuarios)
   onChangeLimit(v: number): void { this.dataService.setLimit(Number(v)); }
   onPrev(): void { this.dataService.prevPage(); }
   onNext(): void { this.dataService.nextPage(); }
   onGoToPage(p: number): void { this.dataService.goToPage(p); }
-
-  // Filtros (firmas llamadas por el HTML)
   onSetNombre(v: string): void { this.dataService.setNombreFiltro(v); }
   onSetRol(v: string): void    { this.dataService.setRolFiltro(v); }
   onAplicarFiltros(): void     { this.dataService.aplicarFiltros(); }
